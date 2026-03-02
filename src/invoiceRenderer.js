@@ -14,6 +14,16 @@ export function renderInvoice(tableData, containerId) {
   const meta = tableData.invoiceMeta || {};
   const s = tableData.styles || {};
 
+  // Logika Default Logo berdasarkan nama sheet (Sayur/Buah) dari public folder
+  let defaultLogoSrc = '';
+  const sheetNameLower = (tableData.sheetName || '').toLowerCase();
+  if (!meta.logoBase64) {
+    if (sheetNameLower.includes('sayur') || sheetNameLower.includes('buah')) {
+      defaultLogoSrc = '/METAAGRA.jpeg';
+    }
+  }
+  const displayLogoUrl = meta.logoBase64 || defaultLogoSrc;
+
   // Default Styles with Overrides
   const headerBg = s.headerBg || '#f3f4f6';
   const borderColor = s.borderColor || '#d1d5db';
@@ -98,9 +108,9 @@ export function renderInvoice(tableData, containerId) {
             <input type="file" id="logoUpload" accept="image/*" class="hidden">
           </div>
           
-          <div id="logoContainer" class="${meta.logoBase64 ? '' : 'border-2 border-dashed border-gray-200'} min-h-[60px] w-full flex items-center border-none rounded group-hover:border-indigo-300 transition-colors">
-            <span id="logoPlaceholder" class="text-gray-400 no-print text-xs ${meta.logoBase64 ? 'hidden' : ''}">Klik icon upload untuk header</span>
-            <img id="companyLogo" src="${meta.logoBase64 || ''}" class="${meta.logoBase64 ? '' : 'hidden'} max-w-full object-contain" style="width: 200px;" alt="Header Image">
+          <div id="logoContainer" class="${displayLogoUrl ? '' : 'border-2 border-dashed border-gray-200'} min-h-[60px] w-full flex items-center border-none rounded group-hover:border-indigo-300 transition-colors">
+            <span id="logoPlaceholder" class="text-gray-400 no-print text-xs ${displayLogoUrl ? 'hidden' : ''}">Klik icon upload untuk header</span>
+            <img id="companyLogo" src="${displayLogoUrl}" class="${displayLogoUrl ? '' : 'hidden'} max-w-full object-contain" style="width: 200px;" alt="Header Image">
           </div>
         </div>
       </div>
@@ -109,7 +119,7 @@ export function renderInvoice(tableData, containerId) {
       <div class="flex flex-row justify-between ${sectionMb} gap-4 text-xs font-medium uppercase tracking-wider">
         <div class="w-1/2">
           <h3 class="text-[10px] font-bold text-black mb-1">PELANGGAN</h3>
-          <input type="text" id="inv_customerName" class="invoice-field text-sm font-bold text-gray-900 border-none outline-none w-full bg-transparent placeholder-gray-400" placeholder="Nama Pelanggan" value="${meta.customerName || ''}">
+          <textarea id="inv_customerName" class="invoice-field text-sm font-bold text-gray-900 border-none outline-none w-full bg-transparent resize-none placeholder-gray-400" rows="2" placeholder="Nama Pelanggan">${meta.customerName || ''}</textarea>
           <textarea id="inv_customerAddress" class="invoice-field text-black border-none outline-none w-full bg-transparent resize-none mt-1 placeholder-gray-400 text-xs" rows="2" placeholder="Alamat & Kontak">${meta.customerAddress || ''}</textarea>
         </div>
         <div class="w-1/3">
@@ -158,27 +168,27 @@ export function renderInvoice(tableData, containerId) {
       <div class="flex flex-col ${sectionGap}">
         <!-- TOTALS (Aligned Right, but small width) -->
         <!-- TOTALS (Vertical Layout) -->
-        <div class="flex justify-end">
-          <div class="w-64 space-y-1">
+        <div class="flex justify-end pr-2 md:pr-4">
+          <div class="w-72 md:w-80 space-y-1">
             <div class="flex justify-between items-center py-1 border-b border-gray-100 italic">
               <span class="text-black text-[10px] uppercase font-bold">SUB TOTAL</span>
               <div class="flex items-center font-bold text-gray-800 text-xs">
                 <span class="mr-1">Rp</span>
-                <input type="text" id="inv_subtotal" class="invoice-field total-input border-none outline-none bg-transparent text-right w-24 font-bold p-0" placeholder="0" value="${meta.subtotal || toRupiahStatic(calculatedSubtotal)}">
+                <input type="text" id="inv_subtotal" class="invoice-field total-input border-none outline-none bg-transparent text-right w-32 font-bold p-0" placeholder="0" value="${meta.subtotal || toRupiahStatic(calculatedSubtotal)}">
               </div>
             </div>
             <div class="flex justify-between items-center py-1 border-b border-gray-100 italic">
               <span class="text-black text-[10px] uppercase font-bold">PPN</span>
               <div class="flex items-center font-bold text-gray-800 text-xs">
                 <span class="mr-1">Rp</span>
-                <input type="text" id="inv_ppn" class="invoice-field total-input border-none outline-none bg-transparent text-right w-24 font-bold p-0" placeholder="0" value="${meta.ppn || '0'}">
+                <input type="text" id="inv_ppn" class="invoice-field total-input border-none outline-none bg-transparent text-right w-32 font-bold p-0" placeholder="0" value="${meta.ppn || '0'}">
               </div>
             </div>
             <div class="flex justify-between items-center py-2 bg-gray-50 px-2 rounded mt-2 shadow-sm" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
               <span class="text-base font-bold text-gray-800 uppercase tracking-tight">TOTAL</span>
               <div class="flex items-center font-black text-black text-base">
                 <span class="mr-1">Rp</span>
-                <input type="text" id="inv_total" class="invoice-field total-input border-none outline-none bg-transparent text-right w-32 font-black p-0" placeholder="0" value="${meta.total || toRupiahStatic(calculatedSubtotal)}">
+                <input type="text" id="inv_total" class="invoice-field total-input border-none outline-none bg-transparent text-right w-40 font-black p-0" placeholder="0" value="${meta.total || toRupiahStatic(calculatedSubtotal)}">
               </div>
             </div>
           </div>
@@ -189,7 +199,7 @@ export function renderInvoice(tableData, containerId) {
           <!-- LEFT: Company & Account Info -->
           <div class="flex-1 space-y-4">
             <div>
-              <input type="text" id="inv_companyName" class="invoice-field text-xs font-bold text-gray-900 block border-none outline-none bg-transparent w-full mb-1" placeholder="Nama Perusahaan" value="${meta.companyName || 'PT. Perusahaan Anda'}">
+              <textarea id="inv_companyName" class="invoice-field text-xs font-bold text-gray-900 block border-none outline-none resize-none bg-transparent w-full mb-1 leading-tight" rows="2" placeholder="Nama Perusahaan">${meta.companyName || 'PT. Perusahaan Anda'}</textarea>
               <textarea id="inv_companyAddress" class="invoice-field text-[10px] text-black border-none outline-none w-full bg-transparent resize-none leading-relaxed" rows="3" placeholder="Alamat & Kontak Perusahaan">${meta.companyAddress || ''}</textarea>
             </div>
             <div>
@@ -202,7 +212,7 @@ export function renderInvoice(tableData, containerId) {
           <div class="w-48 text-center p-4 flex flex-col items-center">
             <p class="text-[11px] font-bold text-gray-900 mb-16 uppercase tracking-wider">HORMAT KAMI</p>
             <div class="w-full h-px bg-black mb-1"></div>
-            <input type="text" id="inv_signatureName" class="invoice-field text-center font-bold text-xs text-gray-900 border-none outline-none bg-transparent w-full pb-1" placeholder="Isi Nama" value="${meta.signatureName || ''}">
+            <textarea id="inv_signatureName" class="invoice-field text-center font-bold text-xs text-gray-900 border-none outline-none resize-none bg-transparent w-full pb-1 leading-tight" rows="2" placeholder="Isi Nama">${meta.signatureName || ''}</textarea>
           </div>
         </div>
       </div>
@@ -272,7 +282,7 @@ export function renderInvoice(tableData, containerId) {
   }
 
   // Show image controls if logo exists
-  if (meta.logoBase64 && imageControls) {
+  if (displayLogoUrl && imageControls) {
     imageControls.classList.remove('hidden');
     imageControls.classList.add('flex');
   }

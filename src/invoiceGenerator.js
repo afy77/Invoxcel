@@ -48,26 +48,58 @@ document.addEventListener('DOMContentLoaded', () => {
       window.print();
     });
 
-    document.getElementById('btnPdf').addEventListener('click', () => {
+    document.getElementById('btnPdf').addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      const originalText = btn.innerHTML;
       const element = document.getElementById('invoiceContainer');
       if (!element) return;
 
-      const opt = {
-        margin:       [0, 0, 0, 0],
-        filename:     `Invoice_${generateInvoiceNumber()}.pdf`,
-        image:        { type: 'jpeg', quality: 1 },
-        html2canvas:  { 
-          scale: 3, 
-          useCORS: true,
-          letterRendering: true,
-          scrollY: 0,
-          scrollX: 0
-        },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-      
-      // Use the promise-based API for better reliability
-      html2pdf().set(opt).from(element).save();
+      try {
+        // Tampilkan status loading dan disable tombol
+        btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white inline mt-0.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses PDF...`;
+        btn.disabled = true;
+        btn.classList.add('cursor-not-allowed', 'opacity-80');
+
+        // Sinkronkan nilai input/textarea ke dalam spesifikasi atribut DOM
+        // Karena html2canvas membaca struktur DOM awal, bukan state input yang sedang aktif
+        const inputs = element.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+          if (input.tagName === 'TEXTAREA') {
+            input.textContent = input.value;
+          } else {
+            input.setAttribute('value', input.value);
+          }
+        });
+
+        // Hapus elemen kontrol sementara saat render PDF agar bersih
+        const imageControls = document.getElementById('imageControls');
+        if (imageControls) imageControls.classList.add('hidden');
+
+        const opt = {
+          margin:       [0, 0, 0, 0],
+          filename:     `Invoice_${generateInvoiceNumber()}.pdf`,
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { 
+            scale: 2, // Kurangi dari 3 menjadi 2 agar tidak boros Memori/lag
+            useCORS: true,
+            scrollY: 0,
+            scrollX: 0
+          },
+          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        
+        // Panggil rendering html2pdf
+        await html2pdf().set(opt).from(element).save();
+
+      } catch (err) {
+        console.error("Gagal mendownload PDF:", err);
+        alert('Terjadi kendala memproses dokumen PDF. Coba gunakan fitur "Print Invoice".');
+      } finally {
+        // Kembalikan tombol seperti semula
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        btn.classList.remove('cursor-not-allowed', 'opacity-80');
+      }
     });
 
   } catch (error) {
