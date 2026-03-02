@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoxcel</title>
+  </head>
+  <body class="bg-slate-50 text-slate-900 font-sans min-h-screen selection:bg-indigo-100 selection:text-indigo-900">
+    
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-10 transition-all shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center">
+        <h1 class="text-2xl font-extrabold flex items-center gap-2 tracking-tight">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" class="text-indigo-600 lucide lucide-table" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/></svg>
+          <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-violet-500">
+            Invoxcel
+          </span>
+        </h1>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      
+      <!-- Upload Section -->
+      <div class="mb-8">
+        <div id="dropZone" class="border-2 border-dashed border-indigo-200 rounded-3xl p-14 text-center bg-white/60 hover:bg-white hover:border-indigo-400 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md group relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-indigo-50/50 to-violet-50/50 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+          <div class="relative z-10">
+            <div class="w-20 h-20 bg-gradient-to-br from-indigo-100 to-violet-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload-cloud"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">Unggah File Excel</h2>
+            <p class="text-slate-500 mb-8 max-w-sm mx-auto">Drag & drop file .xlsx atau .xls di sini, atau klik untuk memilih file dari komputer Anda.</p>
+            <input type="file" id="fileInput" class="hidden" accept=".xlsx, .xls, .csv" />
+            <button class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-medium rounded-xl hover:from-indigo-700 hover:to-violet-700 hover:shadow-lg hover:shadow-indigo-500/30 transition-all duration-300 transform hover:-translate-y-0.5">
+              Pilih File Excel
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div id="loadingIndicator" class="hidden flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+        <span class="ml-3 text-gray-600 font-medium">Memproses file...</span>
+      </div>
+
+
+
+      <!-- Tables Container -->
+      <div id="tablesContainer" class="space-y-8"></div>
+
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+

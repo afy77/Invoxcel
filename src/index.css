@@ -1,0 +1,416 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- INVOICE TEMPLATES --- */
+
+/* 1. modern */
+.invoice-template-modern #invoiceTable,
+.invoice-template-modern #invoiceTable th,
+.invoice-template-modern #invoiceTable td {
+  border-left: none !important;
+  border-right: none !important;
+}
+.invoice-template-modern #invoiceTable {
+  border-top: 2px solid #333 !important;
+  border-bottom: 2px solid #333 !important;
+}
+.invoice-template-modern #invoiceTableBody tr:nth-child(even) td {
+  background-color: #f9fafb !important;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.invoice-template-modern .border-b.border-gray-200 {
+  border-bottom: 2px dashed #e5e7eb !important;
+}
+
+/* 2. corporate */
+.invoice-template-corporate {
+  border-top: 12px solid #1e3a8a !important; /* Blue-900 */
+}
+.invoice-template-corporate #invoiceTable th {
+  background-color: #1e3a8a !important;
+  color: #ffffff !important;
+  border-color: #1e3a8a !important;
+}
+.invoice-template-corporate h3,
+.invoice-template-corporate h4,
+.invoice-template-corporate p {
+  color: #1e3a8a !important;
+}
+
+/* 3. elegant */
+.invoice-template-elegant {
+  border: 1px solid #e5e7eb !important;
+  background-color: #fafafa !important;
+}
+.invoice-template-elegant #invoiceTable {
+  border-color: #d1d5db !important;
+}
+.invoice-template-elegant #invoiceTable th {
+  border-width: 0 0 1px 0 !important;
+  border-color: #000 !important;
+  background-color: transparent !important;
+  text-transform: capitalize !important;
+  font-weight: 600 !important;
+  color: #000 !important;
+}
+.invoice-template-elegant #invoiceTable td {
+  border-width: 0 0 1px 0 !important;
+  border-color: #e5e7eb !important;
+}
+.invoice-template-elegant .invoice-field {
+  color: #374151 !important;
+  font-family: "Times New Roman", serif !important;
+}
+.invoice-template-elegant h3,
+.invoice-template-elegant h4,
+.invoice-template-elegant p {
+  font-family: "Times New Roman", serif !important;
+  letter-spacing: 0.1em;
+}
+
+/* 4. bold (Neo Brutalism) */
+.invoice-template-bold {
+  border: 4px solid #000 !important;
+  box-shadow: 8px 8px 0px #000 !important;
+  border-radius: 0 !important;
+}
+.invoice-template-bold #invoiceTable,
+.invoice-template-bold #invoiceTable th,
+.invoice-template-bold #invoiceTable td {
+  border: 2px solid #000 !important;
+}
+.invoice-template-bold #invoiceTable th {
+  background-color: #fbbf24 !important; /* Amber-400 */
+  color: #000 !important;
+}
+.invoice-template-bold .invoice-field {
+  font-weight: 800 !important;
+  color: #000 !important;
+  border-bottom: 2px solid #000 !important;
+}
+.invoice-template-bold input.invoice-field {
+  padding: 2px 4px !important;
+}
+.invoice-template-bold textarea.invoice-field {
+  padding: 4px !important;
+}
+
+@media print {
+  div[class*="invoice-template-"] {
+    box-shadow: none !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+    margin: 0 !important;
+  }
+  .invoice-template-elegant {
+    padding: 10px !important;
+  }
+  .invoice-template-corporate, 
+  .invoice-template-vibrant {
+    border-top-width: 4px !important;
+  }
+  .invoice-template-eco {
+    border-top-width: 4px !important;
+    border-radius: 0 !important;
+  }
+  .invoice-template-bold {
+    border-width: 2px !important;
+  }
+  .invoice-template-luxury {
+    border-width: 1px !important;
+  }
+  .invoice-template-playful {
+    border-width: 2px !important;
+    border-radius: 0 !important;
+  }
+  .invoice-template-gradient {
+    border-width: 1px !important;
+  }
+}
+
+/* 5. minimalist */
+.invoice-template-minimalist {
+  border: none !important;
+  box-shadow: none !important;
+}
+.invoice-template-minimalist #invoiceTable,
+.invoice-template-minimalist #invoiceTable th,
+.invoice-template-minimalist #invoiceTable td {
+  border-left: none !important;
+  border-right: none !important;
+}
+.invoice-template-minimalist #invoiceTable th {
+  border-bottom: 2px solid #e5e7eb !important;
+  border-top: none !important;
+  background-color: transparent !important;
+  color: #9ca3af !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.05em;
+}
+.invoice-template-minimalist #invoiceTable td {
+  border-bottom: 1px solid #f3f4f6 !important;
+  border-top: none !important;
+}
+
+/* 6. classic */
+.invoice-template-classic {
+  border: 1px solid #991b1b !important;
+}
+.invoice-template-classic #invoiceTable {
+  border-color: #991b1b !important;
+}
+.invoice-template-classic #invoiceTable th {
+  background-color: #991b1b !important;
+  color: #fff !important;
+  border-color: #991b1b !important;
+}
+.invoice-template-classic h3,
+.invoice-template-classic h4,
+.invoice-template-classic p {
+  color: #991b1b !important;
+}
+
+/* 7. playful */
+.invoice-template-playful {
+  background-color: #fdf2f8 !important; /* Pink 50 */
+  border-radius: 1.5rem !important;
+  border: 3px dashed #f472b6 !important; /* Pink 400 */
+}
+.invoice-template-playful #invoiceTable {
+  border-radius: 1rem !important;
+  overflow: hidden !important;
+  border: 2px solid #fbcfe8 !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+.invoice-template-playful #invoiceTable th {
+  background-color: #f472b6 !important;
+  color: #fff !important;
+  border-color: #f472b6 !important;
+  text-transform: capitalize !important;
+}
+.invoice-template-playful #invoiceTable td {
+  border-color: #fce7f3 !important;
+}
+.invoice-template-playful .total-input,
+.invoice-template-playful .invoice-field {
+  color: #be185d !important; /* Pink 700 */
+}
+
+/* 8. industrial */
+.invoice-template-industrial {
+  background-color: #1f2937 !important; /* Gray 800 */
+  color: #d1d5db !important; /* Gray 300 */
+}
+.invoice-template-industrial .text-black,
+.invoice-template-industrial .text-gray-900,
+.invoice-template-industrial .text-gray-800,
+.invoice-template-industrial h3,
+.invoice-template-industrial h4,
+.invoice-template-industrial p {
+  color: #f3f4f6 !important; /* Gray 100 */
+}
+.invoice-template-industrial .invoice-field {
+  color: #f9fafb !important; /* Gray 50 */
+}
+.invoice-template-industrial #invoiceTable {
+  border-color: #374151 !important; /* Gray 700 */
+}
+.invoice-template-industrial #invoiceTable th {
+  background-color: #111827 !important; /* Gray 900 */
+  color: #10b981 !important; /* Emerald 500 */
+  border-color: #374151 !important;
+}
+.invoice-template-industrial #invoiceTable td {
+  border-color: #374151 !important;
+  color: #d1d5db !important;
+}
+.invoice-template-industrial .bg-gray-50 {
+  background-color: #374151 !important;
+}
+
+/* 9. vibrant */
+.invoice-template-vibrant {
+  border-top: 12px solid #8b5cf6 !important; /* Violet 500 */
+}
+.invoice-template-vibrant h3,
+.invoice-template-vibrant h4,
+.invoice-template-vibrant p {
+  color: #8b5cf6 !important;
+}
+.invoice-template-vibrant #invoiceTable th {
+  background-color: #8b5cf6 !important;
+  color: #fff !important;
+  border: none !important;
+}
+.invoice-template-vibrant #invoiceTable td {
+  border: 1px solid #e0e7ff !important;
+}
+
+/* 10. receipt (Struk Belanja Kasir) */
+.invoice-template-receipt {
+  font-family: monospace !important;
+  max-width: 600px !important;
+  margin: 0 auto !important;
+  border: none !important;
+  box-shadow: none !important;
+  background-color: #fff !important;
+}
+.invoice-template-receipt * {
+  font-family: monospace !important;
+}
+.invoice-template-receipt h3,
+.invoice-template-receipt h4,
+.invoice-template-receipt p,
+.invoice-template-receipt .text-black {
+  color: #000 !important;
+  text-align: center !important;
+  width: 100% !important;
+  display: block !important;
+}
+.invoice-template-receipt #invoiceTable,
+.invoice-template-receipt #invoiceTable th,
+.invoice-template-receipt #invoiceTable td {
+  border: none !important;
+  border-bottom: 1px dashed #000 !important;
+  background: transparent !important;
+  color: #000 !important;
+}
+.invoice-template-receipt #invoiceTable th {
+  border-top: 1px dashed #000 !important;
+  border-bottom: 1px dashed #000 !important;
+}
+
+/* 11. luxury (Premium Gold) */
+.invoice-template-luxury {
+  border: 1px solid #d4af37 !important; /* Gold */
+  background-color: #fafdfa !important; /* Slightly warm white */
+}
+.invoice-template-luxury h3,
+.invoice-template-luxury h4,
+.invoice-template-luxury p {
+  color: #d4af37 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.15em !important;
+}
+.invoice-template-luxury #invoiceTable {
+  border: 1px solid #f3e5ab !important;
+}
+.invoice-template-luxury #invoiceTable th {
+  background-color: #000 !important;
+  color: #d4af37 !important;
+  border-color: #000 !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.1em !important;
+}
+.invoice-template-luxury #invoiceTable td {
+  border-bottom: 1px solid #f3e5ab !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+/* 12. tech (Cyberpunk / Futuristic) */
+.invoice-template-tech {
+  background-color: #09090b !important; /* Zinc 950 */
+  color: #a1a1aa !important; /* Zinc 400 */
+  border: 1px solid #27272a !important; /* Zinc 800 */
+}
+.invoice-template-tech .text-black,
+.invoice-template-tech .text-gray-900,
+.invoice-template-tech .text-gray-800,
+.invoice-template-tech p {
+  color: #06b6d4 !important; /* Cyan 500 */
+}
+.invoice-template-tech h3,
+.invoice-template-tech h4 {
+  color: #e879f9 !important; /* Fuchsia 400 */
+  text-transform: uppercase !important;
+  letter-spacing: 0.2em !important;
+}
+.invoice-template-tech .invoice-field {
+  color: #f4f4f5 !important; /* Zinc 50 */
+}
+.invoice-template-tech #invoiceTable {
+  border: 1px solid #06b6d4 !important;
+}
+.invoice-template-tech #invoiceTable th {
+  background-color: transparent !important;
+  color: #e879f9 !important;
+  border-bottom: 1px solid #06b6d4 !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+.invoice-template-tech #invoiceTable td {
+  border-bottom: 1px solid #27272a !important;
+  border-left: none !important;
+  border-right: none !important;
+  color: #d4d4d8 !important; /* Zinc 300 */
+}
+.invoice-template-tech .bg-gray-50 {
+  background-color: #18181b !important; /* Zinc 900 */
+  border: 1px solid #06b6d4 !important;
+}
+
+/* 13. eco (Nature Green) */
+.invoice-template-eco {
+  background-color: #f7fee7 !important; /* Lime 50 */
+  border-top: 10px solid #65a30d !important; /* Lime 600 */
+  border-radius: 0 0 1rem 1rem !important;
+}
+.invoice-template-eco h3,
+.invoice-template-eco h4,
+.invoice-template-eco p {
+  color: #4d7c0f !important; /* Lime 700 */
+}
+.invoice-template-eco #invoiceTable th {
+  background-color: #84cc16 !important; /* Lime 500 */
+  color: #fff !important;
+  border: none !important;
+  border-radius: 0.25rem 0.25rem 0 0 !important;
+}
+.invoice-template-eco #invoiceTable td {
+  border-color: #d9f99d !important; /* Lime 200 */
+  border-left: none !important;
+  border-right: none !important;
+}
+.invoice-template-eco .bg-gray-50 {
+  background-color: #ecfccb !important; /* Lime 100 */
+}
+
+/* 14. gradient (Modern Sunrise) */
+.invoice-template-gradient {
+  background: white;
+  border: 2px solid transparent !important;
+  background-image: linear-gradient(white, white), linear-gradient(to right, #f97316, #eab308) !important;
+  background-origin: border-box !important;
+  background-clip: padding-box, border-box !important;
+}
+.invoice-template-gradient h3,
+.invoice-template-gradient h4,
+.invoice-template-gradient p {
+  color: #ea580c !important; /* Orange 600 */
+}
+.invoice-template-gradient #invoiceTable th {
+  background: linear-gradient(to right, #f97316, #eab308) !important; /* Orange to Yellow */
+  color: #fff !important;
+  border: none !important;
+}
+.invoice-template-gradient #invoiceTable td {
+  border-bottom: 1px solid #ffedd5 !important; /* Orange 50 */
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}

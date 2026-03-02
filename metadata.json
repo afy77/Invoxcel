@@ -1,0 +1,5 @@
+{
+  "name": "Excel Table Manager",
+  "description": "Aplikasi web lokal untuk mengelola, mengedit, dan mengekspor tabel Excel ke PDF.",
+  "requestFramePermissions": []
+}
