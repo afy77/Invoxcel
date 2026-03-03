@@ -89,7 +89,7 @@ export function renderInvoice(tableData, containerId) {
   container.innerHTML = `
     <div class="max-w-4xl mx-auto ${containerPadding} bg-white invoice-template-${templateName}" style="font-family: ${fontFamily}; color: ${cellFontColor};">
       <!-- HEADER AREA (Logo) -->
-      <div class="flex flex-col items-center justify-center border-b border-gray-200 pb-3 ${sectionMb} relative">
+      <div class="flex flex-col items-center justify-center border-b border-gray-200 pt-8 pb-3 ${sectionMb} relative">
         <div class="w-full flex justify-center relative group">
           <div class="no-print absolute top-0 right-0 z-10 flex gap-2">
             <div id="imageControls" class="hidden items-center gap-3 bg-white px-3 py-1.5 rounded-lg shadow-md border border-gray-200">
@@ -127,7 +127,7 @@ export function renderInvoice(tableData, containerId) {
           <h3 class="text-[10px] font-bold text-black mb-1">PELANGGAN</h3>
           <textarea id="inv_customerName" class="invoice-field text-sm font-bold text-gray-900 border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400" rows="1" placeholder="Nama Pelanggan">${meta.customerName || ''}</textarea>
           <textarea id="inv_customerAddress" class="invoice-field text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden mt-1 placeholder-gray-400 text-xs" rows="1" placeholder="Alamat & Kontak">${meta.customerAddress || ''}</textarea>
-        </div>
+        </div> 
         <div class="w-1/3">
           <div class="grid grid-cols-2 gap-x-2 gap-y-1">
             <div class="text-black">Tanggal:</div>
@@ -215,7 +215,7 @@ export function renderInvoice(tableData, containerId) {
           </div>
 
           <!-- RIGHT: Signature (Hormat Kami) -->
-          <div class="w-48 text-center p-4 flex flex-col items-center">
+          <div class="w-48 text-center flex flex-col items-center">
             <p class="text-[11px] font-bold text-gray-900 mb-28 uppercase tracking-wider">HORMAT KAMI</p>
             <div class="w-full h-px bg-black mb-1"></div>
             <textarea id="inv_signatureName" class="invoice-field text-center font-bold text-xs text-gray-900 border-none outline-none resize-none overflow-hidden bg-transparent w-full pb-1 leading-tight" rows="1" placeholder="Isi Nama">${meta.signatureName || ''}</textarea>

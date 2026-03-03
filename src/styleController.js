@@ -67,14 +67,6 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
           </select>
         </div>
         
-        <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Padding Sel</label>
-          <select id="style_padding" class="w-full h-10 text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 trasition-all">
-            <option value="2px 4px" ${currentStyles.padding === '2px 4px' ? 'selected' : ''}>Sangat Rapat</option>
-            <option value="4px 8px" ${currentStyles.padding === '4px 8px' ? 'selected' : ''}>Rapat</option>
-            <option value="6px 12px" ${currentStyles.padding === '6px 12px' || !currentStyles.padding ? 'selected' : ''}>Normal</option>
-          </select>
-        </div>
 
         <button id="btn_applyStyle" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-bold rounded-xl hover:from-indigo-700 hover:to-violet-700 transition-all mt-6 uppercase tracking-widest shadow-md shadow-indigo-200 hover:-translate-y-0.5 hover:shadow-lg">
           Update Desain
@@ -92,7 +84,6 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
       headerFontColor: document.getElementById('style_headerFontColor').value,
       cellFontColor: document.getElementById('style_cellFontColor').value,
       fontFamily: document.getElementById('style_fontFamily').value,
-      padding: document.getElementById('style_padding').value,
     };
     
     // Apply and Save
