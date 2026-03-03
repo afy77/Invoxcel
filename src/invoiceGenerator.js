@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
       window.print();
     });
 
-    document.getElementById('btnPdf').addEventListener('click', async (e) => {
+    document.getElementById('btnPdf')?.addEventListener('click', async (e) => {
       const btn = e.currentTarget;
       const originalText = btn.innerHTML;
       const element = document.getElementById('invoiceContainer');
