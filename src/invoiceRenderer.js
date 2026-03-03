@@ -20,6 +20,12 @@ export function renderInvoice(tableData, containerId) {
   if (!meta.logoBase64) {
     if (sheetNameLower.includes('sayur') || sheetNameLower.includes('buah')) {
       defaultLogoSrc = '/METAAGRA.jpeg';
+    } else if (sheetNameLower.includes('protein')) {
+      defaultLogoSrc = '/KALINGGA.jpeg';
+    } else if (sheetNameLower.includes('karbo')) {
+      defaultLogoSrc = '/SEMESTA.jpeg';
+    } else if (sheetNameLower.includes('bumbu') || sheetNameLower.includes('keringan')) {
+      defaultLogoSrc = '/BEGJA.jpeg';
     }
   }
   const displayLogoUrl = meta.logoBase64 || defaultLogoSrc;
