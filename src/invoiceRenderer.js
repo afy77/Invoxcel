@@ -216,7 +216,7 @@ export function renderInvoice(tableData, containerId) {
 
           <!-- RIGHT: Signature (Hormat Kami) -->
           <div class="w-48 text-center p-4 flex flex-col items-center">
-            <p class="text-[11px] font-bold text-gray-900 mb-16 uppercase tracking-wider">HORMAT KAMI</p>
+            <p class="text-[11px] font-bold text-gray-900 mb-28 uppercase tracking-wider">HORMAT KAMI</p>
             <div class="w-full h-px bg-black mb-1"></div>
             <textarea id="inv_signatureName" class="invoice-field text-center font-bold text-xs text-gray-900 border-none outline-none resize-none bg-transparent w-full pb-1 leading-tight" rows="2" placeholder="Isi Nama">${meta.signatureName || ''}</textarea>
           </div>
