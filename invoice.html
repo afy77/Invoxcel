@@ -11,33 +11,39 @@
           size: auto;
         }
         html, body {
-          height: auto;
-          overflow: visible;
-          margin: 0;
-          padding: 0;
-        }
-        .no-print {
-          display: none !important;
-        }
-        body {
-          background-color: white;
+          height: auto !important;
+          min-height: 0 !important;
+          overflow: visible !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          background-color: white !important;
           -webkit-print-color-adjust: exact;
           print-color-adjust: exact;
+        }
+        .no-print,
+        ::-webkit-calendar-picker-indicator,
+        ::-webkit-inner-spin-button,
+        ::-webkit-clear-button {
+          display: none !important;
+          -webkit-appearance: none !important;
+        }
+        input[type="date"] {
+          appearance: none !important;
+          -webkit-appearance: none !important;
+          -moz-appearance: none !important;
+          background: transparent !important;
         }
         .print-container {
           box-shadow: none !important;
           border: none !important;
-          padding: 10mm 15mm !important;
+          padding: 10px !important;
           margin: 0 auto !important;
           max-width: 100% !important;
           width: 100% !important;
-          min-height: initial !important;
-          page-break-after: avoid;
-        }
-        /* Hide calendar icon on print */
-        input[type="date"]::-webkit-calendar-picker-indicator {
-          display: none !important;
-          -webkit-appearance: none;
+          min-height: 0 !important;
+          page-break-after: auto !important;
+          page-break-inside: avoid !important;
+          page-break-before: auto !important;
         }
       }
     </style>
