@@ -125,8 +125,8 @@ export function renderInvoice(tableData, containerId) {
       <div class="flex flex-row justify-between ${sectionMb} gap-4 text-xs font-medium uppercase tracking-wider">
         <div class="w-1/2">
           <h3 class="text-[10px] font-bold text-black mb-1">PELANGGAN</h3>
-          <textarea id="inv_customerName" class="invoice-field text-sm font-bold text-gray-900 border-none outline-none w-full bg-transparent resize-none placeholder-gray-400" rows="2" placeholder="Nama Pelanggan">${meta.customerName || ''}</textarea>
-          <textarea id="inv_customerAddress" class="invoice-field text-black border-none outline-none w-full bg-transparent resize-none mt-1 placeholder-gray-400 text-xs" rows="2" placeholder="Alamat & Kontak">${meta.customerAddress || ''}</textarea>
+          <textarea id="inv_customerName" class="invoice-field text-sm font-bold text-gray-900 border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400" rows="1" placeholder="Nama Pelanggan">${meta.customerName || ''}</textarea>
+          <textarea id="inv_customerAddress" class="invoice-field text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden mt-1 placeholder-gray-400 text-xs" rows="1" placeholder="Alamat & Kontak">${meta.customerAddress || ''}</textarea>
         </div>
         <div class="w-1/3">
           <div class="grid grid-cols-2 gap-x-2 gap-y-1">
@@ -205,12 +205,12 @@ export function renderInvoice(tableData, containerId) {
           <!-- LEFT: Company & Account Info -->
           <div class="flex-1 space-y-4">
             <div>
-              <textarea id="inv_companyName" class="invoice-field text-xs font-bold text-gray-900 block border-none outline-none resize-none bg-transparent w-full mb-1 leading-tight" rows="2" placeholder="Nama Perusahaan">${meta.companyName || 'PT. Perusahaan Anda'}</textarea>
-              <textarea id="inv_companyAddress" class="invoice-field text-[10px] text-black border-none outline-none w-full bg-transparent resize-none leading-relaxed" rows="3" placeholder="Alamat & Kontak Perusahaan">${meta.companyAddress || ''}</textarea>
+              <textarea id="inv_companyName" class="invoice-field text-xs font-bold text-gray-900 block border-none outline-none resize-none overflow-hidden bg-transparent w-full mb-1 leading-tight" rows="1" placeholder="Nama Perusahaan">${meta.companyName || 'PT. Perusahaan Anda'}</textarea>
+              <textarea id="inv_companyAddress" class="invoice-field text-[10px] text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden leading-relaxed" rows="1" placeholder="Alamat & Kontak Perusahaan">${meta.companyAddress || ''}</textarea>
             </div>
             <div>
               <h4 class="text-[10px] font-bold text-black uppercase tracking-widest mb-1">REKENING PEMBAYARAN</h4>
-              <textarea id="inv_accountInfo" class="invoice-field text-[10px] text-black font-medium border-none outline-none w-full bg-transparent resize-none leading-relaxed" rows="2" placeholder="Nama Bank: 000000 / Atas Nama">${meta.accountInfo || ''}</textarea>
+              <textarea id="inv_accountInfo" class="invoice-field text-[10px] text-black font-medium border-none outline-none w-full bg-transparent resize-none overflow-hidden leading-relaxed" rows="1" placeholder="Nama Bank: 000000 / Atas Nama">${meta.accountInfo || ''}</textarea>
             </div>
           </div>
 
@@ -218,7 +218,7 @@ export function renderInvoice(tableData, containerId) {
           <div class="w-48 text-center p-4 flex flex-col items-center">
             <p class="text-[11px] font-bold text-gray-900 mb-28 uppercase tracking-wider">HORMAT KAMI</p>
             <div class="w-full h-px bg-black mb-1"></div>
-            <textarea id="inv_signatureName" class="invoice-field text-center font-bold text-xs text-gray-900 border-none outline-none resize-none bg-transparent w-full pb-1 leading-tight" rows="2" placeholder="Isi Nama">${meta.signatureName || ''}</textarea>
+            <textarea id="inv_signatureName" class="invoice-field text-center font-bold text-xs text-gray-900 border-none outline-none resize-none overflow-hidden bg-transparent w-full pb-1 leading-tight" rows="1" placeholder="Isi Nama">${meta.signatureName || ''}</textarea>
           </div>
         </div>
       </div>
@@ -376,5 +376,16 @@ export function renderInvoice(tableData, containerId) {
   // Attach auto-save listener to all fields
   container.querySelectorAll('.invoice-field').forEach(field => {
     field.addEventListener('input', saveInvoiceMeta);
+
+    // Auto resize textareas
+    if (field.tagName === 'TEXTAREA') {
+      const resize = () => {
+        field.style.height = 'auto'; // Reset height
+        field.style.height = field.scrollHeight + 'px'; // Set to actual scroll height
+      };
+      field.addEventListener('input', resize);
+      // Run immediately with a tiny delay to ensure CSS is applied
+      setTimeout(resize, 0);
+    }
   });
 }
