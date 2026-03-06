@@ -60,10 +60,13 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Gaya Font</label>
           <select id="style_fontFamily" class="w-full h-10 text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 trasition-all">
-            <option value="Inter, sans-serif" ${currentStyles.fontFamily?.includes('Inter') ? 'selected' : ''}>Inter (Modern)</option>
-            <option value="Arial, sans-serif" ${currentStyles.fontFamily === 'Arial, sans-serif' ? 'selected' : ''}>Arial</option>
-            <option value="'Times New Roman', serif" ${currentStyles.fontFamily?.includes('Times') ? 'selected' : ''}>Serif</option>
-            <option value="monospace" ${currentStyles.fontFamily === 'monospace' ? 'selected' : ''}>Monospace</option>
+            <option value="'Inter', sans-serif" ${currentStyles.fontFamily?.includes('Inter') ? 'selected' : ''}>Inter (Minimalist)</option>
+            <option value="'Poppins', sans-serif" ${currentStyles.fontFamily?.includes('Poppins') ? 'selected' : ''}>Poppins (Modern Round)</option>
+            <option value="'Roboto', sans-serif" ${currentStyles.fontFamily?.includes('Roboto') ? 'selected' : ''}>Roboto (Professional)</option>
+            <option value="'Playfair Display', serif" ${currentStyles.fontFamily?.includes('Playfair') ? 'selected' : ''}>Playfair (Luxury Serif)</option>
+            <option value="'Times New Roman', serif" ${currentStyles.fontFamily?.includes('Times') ? 'selected' : ''}>Times New Roman (Classic)</option>
+            <option value="'Space Mono', monospace" ${currentStyles.fontFamily?.includes('Space') ? 'selected' : ''}>Space Mono (Tech/Receipt)</option>
+            <option value="monospace" ${currentStyles.fontFamily === 'monospace' ? 'selected' : ''}>Default Monospace</option>
           </select>
         </div>
         
@@ -104,7 +107,24 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
 
     // Sync to storage
     const storageKey = 'invoxcel_tables';
-    localStorage.setItem(storageKey, JSON.stringify(globalState.tables));
+    const savedTables = localStorage.getItem(storageKey) || localStorage.getItem('excelTableManager_tables');
+    if (savedTables) {
+      try {
+        const allTables = JSON.parse(savedTables);
+        globalState.tables.forEach(modifiedTable => {
+          const idx = allTables.findIndex(t => t.tableId === modifiedTable.tableId);
+          if (idx !== -1) {
+            allTables[idx].styles = modifiedTable.styles;
+          }
+        });
+        localStorage.setItem(storageKey, JSON.stringify(allTables));
+      } catch (e) {
+        console.error('Gagal sinkronisasi styles', e);
+        localStorage.setItem(storageKey, JSON.stringify(globalState.tables));
+      }
+    } else {
+      localStorage.setItem(storageKey, JSON.stringify(globalState.tables));
+    }
   });
 
   // Apply saved styles on init to DOM if elements exist
