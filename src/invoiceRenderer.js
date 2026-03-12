@@ -31,10 +31,10 @@ export function renderInvoice(tableData, containerId) {
   const displayLogoUrl = meta.logoBase64 || defaultLogoSrc;
 
   // Default Styles with Overrides
-  const headerBg = s.headerBg || '#f3f4f6';
-  const borderColor = s.borderColor || '#d1d5db';
-  const headerFontColor = s.headerFontColor || '#000000';
-  const cellFontColor = s.cellFontColor || '#4b5563';
+  const headerBg = s.headerBg || '#706f6fff';
+  const borderColor = s.borderColor || '#757575ff';
+  const headerFontColor = s.headerFontColor || '#ffffff';
+  const cellFontColor = s.cellFontColor || '#000000';
   const fontFamily = s.fontFamily || 'Inter, sans-serif';
   const accentColor = '#4f46e5';
   
@@ -143,7 +143,7 @@ export function renderInvoice(tableData, containerId) {
         <table class="w-full text-left border-collapse" id="invoiceTable" style="border-color: ${borderColor}; font-size: ${fontSize};">
           <thead>
             <tr>
-              ${tableData.headers.map(h => `<th style="background-color: ${headerBg}; border-color: ${borderColor}; color: ${headerFontColor}; padding: ${padding}; border-width: 1px; border-style: solid; -webkit-print-color-adjust: exact; print-color-adjust: exact;" class="font-bold uppercase">${h}</th>`).join('')}
+              ${tableData.headers.map(h => `<th style="background-color: ${headerBg}; border-color: ${borderColor}; color: ${headerFontColor}; padding: ${padding}; border-width: 1px; border-style: solid; -webkit-print-color-adjust: exact; print-color-adjust: exact;" class="font-extrabold uppercase tracking-wide">${h}</th>`).join('')}
             </tr>
           </thead>
           <tbody id="invoiceTableBody">
@@ -176,25 +176,25 @@ export function renderInvoice(tableData, containerId) {
         <!-- TOTALS (Vertical Layout) -->
         <div class="flex justify-end pr-2 md:pr-4">
           <div class="w-72 md:w-80 space-y-1">
-            <div class="flex justify-between items-center py-1 border-b border-gray-100 italic">
+            <div class="flex justify-between items-center py-1 border-b border-gray-100 italic px-2">
               <span class="text-black text-[10px] uppercase font-bold">SUB TOTAL</span>
-              <div class="flex items-center font-bold text-gray-800 text-xs gap-8">
-                <span>Rp</span>
-                <input type="text" id="inv_subtotal" class="invoice-field total-input border-none outline-none bg-transparent text-left w-28 font-bold" placeholder="0" value="${meta.subtotal || toRupiahStatic(calculatedSubtotal)}">
+              <div class="flex items-center font-bold text-gray-800 text-xs">
+                <span class="mr-1">Rp</span>
+                <input type="text" id="inv_subtotal" class="invoice-field total-input border-none outline-none bg-transparent text-right w-40 font-bold pr-2 py-1 not-italic" placeholder="0" value="${meta.subtotal || toRupiahStatic(calculatedSubtotal)}">
               </div>
             </div>
-            <div class="flex justify-between items-center py-1 border-b border-gray-100 italic">
+            <div class="flex justify-between items-center py-1 border-b border-gray-100 italic px-2">
               <span class="text-black text-[10px] uppercase font-bold">PPN</span>
-              <div class="flex items-center font-bold text-gray-800 text-xs gap-8">
-                <span>Rp</span>
-                <input type="text" id="inv_ppn" class="invoice-field total-input border-none outline-none bg-transparent text-left w-28 font-bold" placeholder="0" value="${meta.ppn || '0'}">
+              <div class="flex items-center font-bold text-gray-800 text-xs">
+                <span class="mr-1">Rp</span>
+                <input type="text" id="inv_ppn" class="invoice-field total-input border-none outline-none bg-transparent text-right w-40 font-bold pr-2 py-1 not-italic" placeholder="0" value="${meta.ppn || '0'}">
               </div>
             </div>
             <div class="flex justify-between items-center py-2 bg-gray-50 px-2 rounded mt-2 shadow-sm" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
               <span class="text-base font-bold text-gray-800 uppercase tracking-tight">TOTAL</span>
-              <div class="flex items-center font-black text-black text-base gap-8">
-                <span>Rp</span>
-                <input type="text" id="inv_total" class="invoice-field total-input border-none outline-none bg-transparent text-left w-28 font-black" placeholder="0" value="${meta.total || toRupiahStatic(calculatedSubtotal)}">
+              <div class="flex items-center font-black text-black text-base">
+                <span class="mr-1">Rp</span>
+                <input type="text" id="inv_total" class="invoice-field total-input border-none outline-none bg-transparent text-right w-40 font-black pr-2 py-1 not-italic" placeholder="0" value="${meta.total || toRupiahStatic(calculatedSubtotal)}">
               </div>
             </div>
           </div>

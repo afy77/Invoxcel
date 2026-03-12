@@ -43,22 +43,22 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
 
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Warna Header</label>
-          <input type="color" id="style_headerBg" value="${currentStyles.headerBg || '#f3f4f6'}" class="w-full h-10 rounded-xl cursor-pointer border border-slate-200">
+          <input type="color" id="style_headerBg" value="${currentStyles.headerBg || '#374151'}" class="w-full h-10 rounded-xl cursor-pointer border border-slate-200">
         </div>
         
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Warna Border</label>
-          <input type="color" id="style_borderColor" value="${currentStyles.borderColor || '#d1d5db'}" class="w-full h-10 rounded-xl cursor-pointer border border-slate-200">
+          <input type="color" id="style_borderColor" value="${currentStyles.borderColor || '#000000'}" class="w-full h-10 rounded-xl cursor-pointer border border-slate-200">
         </div>
 
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Teks Header</label>
-          <input type="color" id="style_headerFontColor" value="${currentStyles.headerFontColor || '#000000'}" class="w-full h-10 rounded-xl cursor-pointer border border-slate-200">
+          <input type="color" id="style_headerFontColor" value="${currentStyles.headerFontColor || '#ffffff'}" class="w-full h-10 rounded-xl cursor-pointer border border-slate-200">
         </div>
 
         <div>
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Teks Sel</label>
-          <input type="color" id="style_cellFontColor" value="${currentStyles.cellFontColor || '#4b5563'}" class="w-full h-10 rounded-xl cursor-pointer border border-slate-200">
+          <input type="color" id="style_cellFontColor" value="${currentStyles.cellFontColor || '#000000'}" class="w-full h-10 rounded-xl cursor-pointer border border-slate-200">
         </div>
         
         <div>
