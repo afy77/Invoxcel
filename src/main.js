@@ -16,19 +16,34 @@ const globalState = {
   tables: [] // Menyimpan data tabel yang sedang aktif
 };
 
-const storageKey = 'invoxcel_tables';
+const storageKey  = 'invoxcel_tables';
+const timestampKey = 'invoxcel_timestamp';
+const EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 jam dalam milidetik
 
 function saveToLocalStorage() {
   localStorage.setItem(storageKey, JSON.stringify(globalState.tables));
+  localStorage.setItem(timestampKey, Date.now().toString());
 }
 
 function loadFromLocalStorage() {
+  const savedTime = localStorage.getItem(timestampKey);
+  const now = Date.now();
+
+  // Cek apakah data sudah lebih dari 24 jam
+  if (savedTime && (now - parseInt(savedTime, 10) > EXPIRATION_TIME)) {
+    localStorage.removeItem(storageKey);
+    localStorage.removeItem(timestampKey);
+    localStorage.removeItem('excelTableManager_tables');
+    console.log('Data lokal dihapus karena sudah melebihi 24 jam.');
+    return false;
+  }
+
   const saved = localStorage.getItem(storageKey) || localStorage.getItem('excelTableManager_tables');
   if (saved) {
     try {
       globalState.tables = JSON.parse(saved);
-      // Migrate old data key to new key on next save
-      if (!localStorage.getItem(storageKey)) {
+      // Migrate old data key to new key / update timestamp on next save
+      if (!localStorage.getItem(storageKey) || !savedTime) {
         saveToLocalStorage();
       }
       return true;
@@ -123,21 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const cardEl = document.getElementById(`card_${tableId}`);
         if (cardEl) cardEl.querySelector('.btn-save-changes')?.classList.replace('hidden', 'flex');
       },
-      onReplaceHeaderWithRow: (tableId) => {
-        saveTableState(tableId, globalState); // Ensure draft is saved
-        const tableData = globalState.tables.find(t => t.tableId === tableId);
-        if (tableData && tableData.rows.length > 0) {
-          tableData.headers = [...tableData.rows[0]];
-          tableData.rows.splice(0, 1);
-          renderAll();
-          editStates[tableId] = false;
-          toggleEditMode(tableId, globalState);
-          const cardEl = document.getElementById(`card_${tableId}`);
-          if (cardEl) cardEl.querySelector('.btn-save-changes')?.classList.replace('hidden', 'flex');
-        } else {
-          alert('Tabel harus memiliki minimal 1 baris untuk melakukan aksi ini.');
-        }
-      },
       onPrint: (tableId) => printTable(tableId),
       onPdf: (tableId) => {
         const tableData = globalState.tables.find(t => t.tableId === tableId);
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const singleRowData = {
             ...tableData,
             rows: [tableData.rows[rowIndex]],
-            // Jangan bawa metadata invoice lama agar tidak bentrok
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                // Jangan bawa metadata invoice lama agar tidak bentrok
             invoiceMeta: {} 
           };
           sessionStorage.setItem('invoiceData', JSON.stringify(singleRowData));

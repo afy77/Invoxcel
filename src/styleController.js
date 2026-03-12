@@ -34,6 +34,10 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
             <option value="tech" ${currentStyles.template === 'tech' ? 'selected' : ''}>Tech Cyberpunk</option>
             <option value="eco" ${currentStyles.template === 'eco' ? 'selected' : ''}>Eco Nature</option>
             <option value="gradient" ${currentStyles.template === 'gradient' ? 'selected' : ''}>Sunset Gradient</option>
+            <option value="ocean" ${currentStyles.template === 'ocean' ? 'selected' : ''}>Ocean Breeze</option>
+            <option value="monochrome" ${currentStyles.template === 'monochrome' ? 'selected' : ''}>Sleek Monochrome</option>
+            <option value="corporate-modern" ${currentStyles.template === 'corporate-modern' ? 'selected' : ''}>Corporate Modern (Perusahaan)</option>
+            <option value="nota-kontan" ${currentStyles.template === 'nota-kontan' ? 'selected' : ''}>Nota Kontan (UMKM Klasik)</option>
           </select>
         </div>
 
@@ -118,12 +122,15 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
           }
         });
         localStorage.setItem(storageKey, JSON.stringify(allTables));
+        localStorage.setItem('invoxcel_timestamp', Date.now().toString());
       } catch (e) {
         console.error('Gagal sinkronisasi styles', e);
         localStorage.setItem(storageKey, JSON.stringify(globalState.tables));
+        localStorage.setItem('invoxcel_timestamp', Date.now().toString());
       }
     } else {
       localStorage.setItem(storageKey, JSON.stringify(globalState.tables));
+      localStorage.setItem('invoxcel_timestamp', Date.now().toString());
     }
   });
 
