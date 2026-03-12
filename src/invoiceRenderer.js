@@ -87,9 +87,9 @@ export function renderInvoice(tableData, containerId) {
   const templateName = s.template || 'default';
 
   container.innerHTML = `
-    <div class="max-w-4xl mx-auto ${containerPadding} bg-white invoice-template-${templateName}" style="font-family: ${fontFamily}; color: ${cellFontColor};">
+    <div class="max-w-4xl print:max-w-none w-full mx-auto ${containerPadding} bg-white invoice-template-${templateName}" style="font-family: ${fontFamily}; color: ${cellFontColor};">
       <!-- HEADER AREA (Logo) -->
-      <div class="flex flex-col items-center justify-center border-b-4 border-gray-800 pt-8 pb-3 ${sectionMb} relative">
+      <div class="flex flex-col items-center justify-center border-b-4 border-double border-gray-800 pt-8 pb-3 ${sectionMb} relative">
         <div class="w-full flex justify-center relative group">
           <div class="no-print absolute top-0 right-0 z-10 flex gap-2">
             <div id="imageControls" class="hidden items-center gap-3 bg-white px-3 py-1.5 rounded-lg shadow-md border border-gray-200">
@@ -178,23 +178,23 @@ export function renderInvoice(tableData, containerId) {
           <div class="w-72 md:w-80 space-y-1">
             <div class="flex justify-between items-center py-1 border-b border-gray-100 italic">
               <span class="text-black text-[10px] uppercase font-bold">SUB TOTAL</span>
-              <div class="flex items-center font-bold text-gray-800 text-xs gap-1">
+              <div class="flex items-center font-bold text-gray-800 text-xs gap-8">
                 <span>Rp</span>
-                <input type="text" id="inv_subtotal" class="invoice-field total-input border-none outline-none bg-transparent text-left w-32 font-bold" placeholder="0" value="${meta.subtotal || toRupiahStatic(calculatedSubtotal)}">
+                <input type="text" id="inv_subtotal" class="invoice-field total-input border-none outline-none bg-transparent text-left w-28 font-bold" placeholder="0" value="${meta.subtotal || toRupiahStatic(calculatedSubtotal)}">
               </div>
             </div>
             <div class="flex justify-between items-center py-1 border-b border-gray-100 italic">
               <span class="text-black text-[10px] uppercase font-bold">PPN</span>
-              <div class="flex items-center font-bold text-gray-800 text-xs gap-1">
+              <div class="flex items-center font-bold text-gray-800 text-xs gap-8">
                 <span>Rp</span>
-                <input type="text" id="inv_ppn" class="invoice-field total-input border-none outline-none bg-transparent text-left w-32 font-bold" placeholder="0" value="${meta.ppn || '0'}">
+                <input type="text" id="inv_ppn" class="invoice-field total-input border-none outline-none bg-transparent text-left w-28 font-bold" placeholder="0" value="${meta.ppn || '0'}">
               </div>
             </div>
             <div class="flex justify-between items-center py-2 bg-gray-50 px-2 rounded mt-2 shadow-sm" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
               <span class="text-base font-bold text-gray-800 uppercase tracking-tight">TOTAL</span>
-              <div class="flex items-center font-black text-black text-base gap-1">
+              <div class="flex items-center font-black text-black text-base gap-8">
                 <span>Rp</span>
-                <input type="text" id="inv_total" class="invoice-field total-input border-none outline-none bg-transparent text-left w-36 font-black" placeholder="0" value="${meta.total || toRupiahStatic(calculatedSubtotal)}">
+                <input type="text" id="inv_total" class="invoice-field total-input border-none outline-none bg-transparent text-left w-28 font-black" placeholder="0" value="${meta.total || toRupiahStatic(calculatedSubtotal)}">
               </div>
             </div>
           </div>
