@@ -234,6 +234,15 @@ export function saveTableState(tableId, globalState) {
     return 'Rp ' + number.toLocaleString('id-ID');
   };
 
+  // Helper formatting qty
+  const toQty = (val) => {
+    if (val === undefined || val === null || val === '') return '';
+    const cleaned = val.toString().replace(/[^0-9]/g, '');
+    const number = parseInt(cleaned, 10);
+    if (isNaN(number)) return val;
+    return number.toLocaleString('id-ID');
+  };
+
   // Extract dynamic headers from UI
   const headerContents = tableEl.querySelectorAll('thead th:not(.action-col) .header-content');
   tableData.headers = Array.from(headerContents).map(div => div.textContent.trim());
@@ -247,9 +256,13 @@ export function saveTableState(tableId, globalState) {
     return Array.from(cells).map((td, colIdx) => {
       let val = td.textContent.trim();
       
-      // Auto format column 2 (Harga) and column 3 (Jumlah) ONLY
-      // Index 0: Nama, Index 1: QTY, Index 2: Harga, Index 3: Jumlah
-      if (colIdx === 2 || colIdx === 3) {
+      if (colIdx === 0 && val) {
+        val = val.toUpperCase();
+        if (td.textContent !== val) td.textContent = val;
+      } else if (colIdx === 1) {
+        val = toQty(val);
+        if (td.textContent !== val) td.textContent = val;
+      } else if (colIdx === 2 || colIdx === 3) {
         val = toRupiah(val);
         // Update the DOM as well for immediate feedback
         if (td.textContent !== val) td.textContent = val;

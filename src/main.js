@@ -41,7 +41,30 @@ function loadFromLocalStorage() {
   const saved = localStorage.getItem(storageKey) || localStorage.getItem('excelTableManager_tables');
   if (saved) {
     try {
-      globalState.tables = JSON.parse(saved);
+      const parsedTables = JSON.parse(saved);
+      const formatQty = (val) => {
+        if (val === undefined || val === null || val === '') return '';
+        const cleaned = val.toString().replace(/[^0-9]/g, '');
+        const number = parseInt(cleaned, 10);
+        if (isNaN(number)) return val;
+        return number.toLocaleString('id-ID');
+      };
+
+      // Migrate headers for existing tables
+      parsedTables.forEach(table => {
+        if (table.headers) {
+          if (table.headers[1] && table.headers[1].toUpperCase() === 'QTY') table.headers[1] = 'JUMLAH';
+          if (table.headers[2] && table.headers[2].toUpperCase() === 'HARGA') table.headers[2] = 'HARGA SATUAN';
+          if (table.headers[3] && table.headers[3].toUpperCase() === 'JUMLAH') table.headers[3] = 'SUB TOTAL';
+        }
+        if (table.rows) {
+          table.rows.forEach(row => {
+            if (row[0] && typeof row[0] === 'string') row[0] = row[0].toUpperCase();
+            if (row[1] !== undefined) row[1] = formatQty(row[1]);
+          });
+        }
+      });
+      globalState.tables = parsedTables;
       // Migrate old data key to new key / update timestamp on next save
       if (!localStorage.getItem(storageKey) || !savedTime) {
         saveToLocalStorage();
@@ -192,14 +215,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isNaN(number)) return val;
         return 'Rp ' + number.toLocaleString('id-ID');
       };
+      const toQty = (val) => {
+        if (val === undefined || val === null || val === '') return '';
+        const cleaned = val.toString().replace(/[^0-9]/g, '');
+        const number = parseInt(cleaned, 10);
+        if (isNaN(number)) return val;
+        return number.toLocaleString('id-ID');
+      };
       
       // HARDCODE: Enforce standard headers and format rows for ALL tables
       newTables = newTables.map(table => {
         return {
           ...table,
-          headers: ['Nama Barang', 'QTY', 'Harga', 'Jumlah'],
+          headers: ['Nama Barang', 'JUMLAH', 'HARGA SATUAN', 'SUB TOTAL'],
           rows: table.rows.map(row => {
             const newRow = [...row];
+            if (newRow[0] !== undefined && typeof newRow[0] === 'string') newRow[0] = newRow[0].toUpperCase();
+            if (newRow[1] !== undefined) newRow[1] = toQty(newRow[1]);
             if (newRow[2] !== undefined) newRow[2] = toRupiah(newRow[2]);
             if (newRow[3] !== undefined) newRow[3] = toRupiah(newRow[3]);
             return newRow;

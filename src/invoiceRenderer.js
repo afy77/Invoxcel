@@ -14,20 +14,41 @@ export function renderInvoice(tableData, containerId) {
   const meta = tableData.invoiceMeta || {};
   const s = tableData.styles || {};
 
-  // Logika Default Logo berdasarkan nama sheet (Sayur/Buah) dari public folder
+  // Logika Default berdasarkan nama sheet (Sayur/Buah/Protein/Karbo/Bumbu dll)
   let defaultLogoSrc = '';
+  let defCompanyName = 'PT. Perusahaan Anda';
+  let defCompanyAddress = '';
+  let defAccountInfo = '';
+  let defSignatureName = '';
+
   const sheetNameLower = (tableData.sheetName || '').toLowerCase();
-  if (!meta.logoBase64) {
-    if (sheetNameLower.includes('sayur') || sheetNameLower.includes('buah')) {
-      defaultLogoSrc = '/METAAGRA.jpeg';
-    } else if (sheetNameLower.includes('protein')) {
-      defaultLogoSrc = '/KALINGGA.jpeg';
-    } else if (sheetNameLower.includes('karbo')) {
-      defaultLogoSrc = '/SEMESTA.jpeg';
-    } else if (sheetNameLower.includes('bumbu') || sheetNameLower.includes('keringan')) {
-      defaultLogoSrc = '/BEGJA.jpeg';
-    }
+  
+  if (sheetNameLower.includes('sayur') || sheetNameLower.includes('buah')) {
+    defaultLogoSrc = '/METAAGRA.jpeg';
+    defCompanyName = 'CV META AGRA';
+    defCompanyAddress = '0269-JL PERINTIS KEMERDEKAAN';
+    defAccountInfo = '1420195889 / META AGRA CV (IDR)';
+    defSignatureName = 'DEDEN NURMANSYAH ZEIN';
+  } else if (sheetNameLower.includes('protein')) {
+    defaultLogoSrc = '/KALINGGA.jpeg';
+    defCompanyName = 'CV KALINGGA MURDA';
+    defCompanyAddress = '0269-JL PERINTIS KEMERDEKAAN';
+    defAccountInfo = '1420129076 / KALINGGA MURDA CV (IDR)';
+    defSignatureName = 'HUSNI TSANI FAIZAL';
+  } else if (sheetNameLower.includes('karbo')) {
+    defaultLogoSrc = '/SEMESTA.jpeg';
+    defCompanyName = 'CV SEMESTA DIRAYA';
+    defCompanyAddress = '0269-JL PERINTIS KEMERDEKAAN';
+    defAccountInfo = '1420163288 / SEMESTA DIRAYA (IDR)';
+    defSignatureName = 'YUSUP KURNIAWAN';
+  } else if (sheetNameLower.includes('bumbu') || sheetNameLower.includes('keringan')) {
+    defaultLogoSrc = '/BEGJA.jpeg';
+    defCompanyName = 'CV BEGJA KEMAYANGAN';
+    defCompanyAddress = '0269-JL PERINTIS KEMERDEKAAN';
+    defAccountInfo = 'ACOUNT: 1420228726 / BEGJA KEMAYANGAN CV (IDR)';
+    defSignatureName = 'RENDRA WIJAYA';
   }
+  
   const displayLogoUrl = meta.logoBase64 || defaultLogoSrc;
 
   // Default Styles with Overrides
@@ -85,6 +106,7 @@ export function renderInvoice(tableData, containerId) {
   };
 
   const templateName = s.template || 'default';
+  const isNoLineTemplate = templateName === 'default-noline';
 
   container.innerHTML = `
     <div class="max-w-4xl print:max-w-none w-full mx-auto ${containerPadding} bg-white invoice-template-${templateName}" style="font-family: ${fontFamily}; color: ${cellFontColor};">
@@ -149,9 +171,24 @@ export function renderInvoice(tableData, containerId) {
           <tbody id="invoiceTableBody">
             ${tableData.rows.map((row) => `
               <tr>
-                ${tableData.headers.map((_, idx) => {
+                ${tableData.headers.map((_h, idx) => {
                   let cell = row[idx];
                   let displayVal = (cell !== undefined && cell !== null) ? cell : '';
+
+                  const upperH = typeof _h === 'string' ? _h.toUpperCase() : '';
+                  if (upperH === 'NAMA BARANG' && displayVal !== '') {
+                    displayVal = displayVal.toString().toUpperCase();
+                  }
+
+                  // Quantity/JUMLAH: thousands separator for index 1
+                  if (idx === 1 && displayVal !== '') {
+                    const cleaned = displayVal.toString().replace(/[^0-9]/g, '');
+                    const number = parseInt(cleaned, 10);
+                    if (!isNaN(number)) {
+                      displayVal = number.toLocaleString('id-ID');
+                    }
+                  }
+
                   // Format Rupiah for 3rd (index 2) and 4th (index 3) columns ONLY
                   if ((idx === 2 || idx === 3) && displayVal !== '' && !displayVal.toString().includes('Rp')) {
                     const cleaned = displayVal.toString().replace(/[^0-9]/g, '');
@@ -205,20 +242,20 @@ export function renderInvoice(tableData, containerId) {
           <!-- LEFT: Company & Account Info -->
           <div class="flex-1 space-y-4">
             <div>
-              <textarea id="inv_companyName" class="invoice-field text-xs font-bold text-gray-900 block border-none outline-none resize-none overflow-hidden bg-transparent w-full mb-1 leading-tight" rows="1" placeholder="Nama Perusahaan">${meta.companyName || 'PT. Perusahaan Anda'}</textarea>
-              <textarea id="inv_companyAddress" class="invoice-field text-[10px] text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden leading-relaxed" rows="1" placeholder="Alamat & Kontak Perusahaan">${meta.companyAddress || ''}</textarea>
+              <textarea id="inv_companyName" class="invoice-field text-xs font-bold text-gray-900 block border-none outline-none resize-none overflow-hidden bg-transparent w-full mb-1 leading-tight" rows="1" placeholder="Nama Perusahaan">${meta.companyName || defCompanyName}</textarea>
+              <textarea id="inv_companyAddress" class="invoice-field text-[10px] text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden leading-relaxed" rows="1" placeholder="Alamat & Kontak Perusahaan">${meta.companyAddress || defCompanyAddress}</textarea>
             </div>
             <div>
               <h4 class="text-[10px] font-bold text-black uppercase tracking-widest mb-1">REKENING PEMBAYARAN</h4>
-              <textarea id="inv_accountInfo" class="invoice-field text-[10px] text-black font-medium border-none outline-none w-full bg-transparent resize-none overflow-hidden leading-relaxed" rows="1" placeholder="Nama Bank: 000000 / Atas Nama">${meta.accountInfo || ''}</textarea>
+              <textarea id="inv_accountInfo" class="invoice-field text-[10px] text-black font-medium border-none outline-none w-full bg-transparent resize-none overflow-hidden leading-relaxed" rows="1" placeholder="Nama Bank: 000000 / Atas Nama">${meta.accountInfo || defAccountInfo}</textarea>
             </div>
           </div>
 
           <!-- RIGHT: Signature (Hormat Kami) -->
           <div class="w-48 text-center flex flex-col items-center">
             <p class="text-[11px] font-bold text-gray-900 mb-28 uppercase tracking-wider">HORMAT KAMI</p>
-            <div class="w-full h-px bg-black mb-1"></div>
-            <textarea id="inv_signatureName" class="invoice-field text-center font-bold text-xs text-gray-900 border-none outline-none resize-none overflow-hidden bg-transparent w-full pb-1 leading-tight" rows="1" placeholder="Isi Nama">${meta.signatureName || ''}</textarea>
+            ${isNoLineTemplate ? '' : '<div class="w-full h-px bg-black mb-1"></div>'}
+            <textarea id="inv_signatureName" class="invoice-field text-center font-bold text-xs text-gray-900 border-none outline-none resize-none overflow-hidden bg-transparent w-full pb-1 leading-tight" rows="1" placeholder="Isi Nama">${meta.signatureName || defSignatureName}</textarea>
           </div>
         </div>
       </div>

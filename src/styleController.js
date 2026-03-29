@@ -21,6 +21,7 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
           <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Template Invoice</label>
           <select id="style_template" class="w-full h-10 text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 trasition-all">
             <option value="default" ${currentStyles.template === 'default' || !currentStyles.template ? 'selected' : ''}>Standard (Default)</option>
+            <option value="default-noline" ${currentStyles.template === 'default-noline' ? 'selected' : ''}>Standard (Tanpa Garis TTD)</option>
             <option value="modern" ${currentStyles.template === 'modern' ? 'selected' : ''}>Modern Minimalis</option>
             <option value="corporate" ${currentStyles.template === 'corporate' ? 'selected' : ''}>Corporate Blue</option>
             <option value="elegant" ${currentStyles.template === 'elegant' ? 'selected' : ''}>Elegant Dark</option>
@@ -67,9 +68,16 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
             <option value="'Inter', sans-serif" ${currentStyles.fontFamily?.includes('Inter') ? 'selected' : ''}>Inter (Minimalist)</option>
             <option value="'Poppins', sans-serif" ${currentStyles.fontFamily?.includes('Poppins') ? 'selected' : ''}>Poppins (Modern Round)</option>
             <option value="'Roboto', sans-serif" ${currentStyles.fontFamily?.includes('Roboto') ? 'selected' : ''}>Roboto (Professional)</option>
+            <option value="'Montserrat', sans-serif" ${currentStyles.fontFamily?.includes('Montserrat') ? 'selected' : ''}>Montserrat (Bold Clean)</option>
+            <option value="'Nunito', sans-serif" ${currentStyles.fontFamily?.includes('Nunito') ? 'selected' : ''}>Nunito (Soft Rounded)</option>
+            <option value="'Outfit', sans-serif" ${currentStyles.fontFamily?.includes('Outfit') ? 'selected' : ''}>Outfit (Modern Tech)</option>
+            <option value="'Oswald', sans-serif" ${currentStyles.fontFamily?.includes('Oswald') ? 'selected' : ''}>Oswald (Tall & Strong)</option>
+            <option value="'Lora', serif" ${currentStyles.fontFamily?.includes('Lora') ? 'selected' : ''}>Lora (Elegant Serif)</option>
             <option value="'Playfair Display', serif" ${currentStyles.fontFamily?.includes('Playfair') ? 'selected' : ''}>Playfair (Luxury Serif)</option>
             <option value="'Times New Roman', serif" ${currentStyles.fontFamily?.includes('Times') ? 'selected' : ''}>Times New Roman (Classic)</option>
+            <option value="'Dancing Script', cursive" ${currentStyles.fontFamily?.includes('Dancing') ? 'selected' : ''}>Dancing Script (Cursive)</option>
             <option value="'Space Mono', monospace" ${currentStyles.fontFamily?.includes('Space') ? 'selected' : ''}>Space Mono (Tech/Receipt)</option>
+            <option value="'Fira Code', monospace" ${currentStyles.fontFamily?.includes('Fira') ? 'selected' : ''}>Fira Code (Developer)</option>
             <option value="monospace" ${currentStyles.fontFamily === 'monospace' ? 'selected' : ''}>Default Monospace</option>
           </select>
         </div>

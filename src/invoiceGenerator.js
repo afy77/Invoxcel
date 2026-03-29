@@ -63,7 +63,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Sinkronkan nilai input/textarea ke dalam spesifikasi atribut DOM
         // Karena html2canvas membaca struktur DOM awal, bukan state input yang sedang aktif
         const inputs = element.querySelectorAll('input, textarea');
+        // Simpan placeholder agar bisa dikembalikan nanti
+        window._pdf_placeholders = [];
         inputs.forEach(input => {
+          window._pdf_placeholders.push({ el: input, text: input.getAttribute('placeholder') });
+          // Hapus placeholder agar html2canvas mengabaikannya jika kosong
+          input.removeAttribute('placeholder');
+
           if (input.tagName === 'TEXTAREA') {
             input.textContent = input.value;
           } else {
@@ -95,6 +101,20 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error("Gagal mendownload PDF:", err);
         alert('Terjadi kendala memproses dokumen PDF. Coba gunakan fitur "Print Invoice".');
       } finally {
+        // Kembalikan placeholder yang dihapus
+        if (window._pdf_placeholders) {
+          window._pdf_placeholders.forEach(p => {
+            if (p.text !== null) p.el.setAttribute('placeholder', p.text);
+          });
+          delete window._pdf_placeholders;
+        }
+
+        // Kembalikan elemen gambar
+        const imageControls = document.getElementById('imageControls');
+        if (imageControls && !document.getElementById('companyLogo').classList.contains('hidden')) {
+          imageControls.classList.remove('hidden');
+        }
+
         // Kembalikan tombol seperti semula
         btn.innerHTML = originalText;
         btn.disabled = false;
