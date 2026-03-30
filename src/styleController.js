@@ -13,13 +13,13 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
 
   // Render UI Panel Styling (Compact Sidebar Version)
   panel.innerHTML = `
-    <div class="bg-white/80 backdrop-blur-xl p-6 rounded-3xl shadow-xl shadow-indigo-100/30 border border-slate-200 no-print sticky top-8">
-      <h3 class="text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-500 uppercase tracking-widest mb-6 border-b border-slate-200/60 pb-3">Desain Tabel</h3>
+    <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl p-6 rounded-3xl shadow-xl shadow-indigo-100/30 dark:shadow-none border border-slate-200 dark:border-slate-700/60 no-print sticky top-8 transition-colors">
+      <h3 class="text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-500 dark:from-indigo-400 dark:to-violet-400 uppercase tracking-widest mb-6 border-b border-slate-200/60 dark:border-slate-700/60 pb-3">Desain Tabel</h3>
       
       <div class="space-y-4">
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Template Invoice</label>
-          <select id="style_template" class="w-full h-10 text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 trasition-all">
+          <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Template Invoice</label>
+          <select id="style_template" class="w-full h-10 text-xs border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/80 dark:text-slate-200 rounded-xl px-3 outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 trasition-all">
             <option value="default" ${currentStyles.template === 'default' || !currentStyles.template ? 'selected' : ''}>Standard (Default)</option>
             <option value="default-noline" ${currentStyles.template === 'default-noline' ? 'selected' : ''}>Standard (Tanpa Garis TTD)</option>
             <option value="modern" ${currentStyles.template === 'modern' ? 'selected' : ''}>Modern Minimalis</option>
@@ -43,28 +43,44 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
         </div>
 
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Warna Header</label>
-          <input type="color" id="style_headerBg" value="${currentStyles.headerBg || '#374151'}" class="w-full h-10 rounded-xl cursor-pointer border border-slate-200">
+          <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Warna Header</label>
+          <div class="relative w-full h-10 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 flex items-center px-3 overflow-hidden group hover:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-400/50 transition-all cursor-pointer">
+            <input type="color" id="style_headerBg" value="${currentStyles.headerBg || '#374151'}" class="absolute -left-10 -top-10 opacity-0 w-[200%] h-[200%] cursor-pointer" oninput="this.nextElementSibling.style.backgroundColor = this.value; this.nextElementSibling.nextElementSibling.textContent = this.value.toUpperCase()">
+            <div class="w-5 h-5 rounded-full shadow-sm ring-1 ring-black/10 flex-shrink-0 transition-colors" style="background-color: ${currentStyles.headerBg || '#374151'};"></div>
+            <span class="ml-3 text-xs font-mono font-medium text-slate-600 dark:text-slate-300 pointer-events-none">${(currentStyles.headerBg || '#374151').toUpperCase()}</span>
+          </div>
         </div>
         
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Warna Border</label>
-          <input type="color" id="style_borderColor" value="${currentStyles.borderColor || '#000000'}" class="w-full h-10 rounded-xl cursor-pointer border border-slate-200">
+          <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Warna Border</label>
+          <div class="relative w-full h-10 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 flex items-center px-3 overflow-hidden group hover:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-400/50 transition-all cursor-pointer">
+            <input type="color" id="style_borderColor" value="${currentStyles.borderColor || '#000000'}" class="absolute -left-10 -top-10 opacity-0 w-[200%] h-[200%] cursor-pointer" oninput="this.nextElementSibling.style.backgroundColor = this.value; this.nextElementSibling.nextElementSibling.textContent = this.value.toUpperCase()">
+            <div class="w-5 h-5 rounded-full shadow-sm ring-1 ring-black/10 flex-shrink-0 transition-colors" style="background-color: ${currentStyles.borderColor || '#000000'};"></div>
+            <span class="ml-3 text-xs font-mono font-medium text-slate-600 dark:text-slate-300 pointer-events-none">${(currentStyles.borderColor || '#000000').toUpperCase()}</span>
+          </div>
         </div>
 
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Teks Header</label>
-          <input type="color" id="style_headerFontColor" value="${currentStyles.headerFontColor || '#ffffff'}" class="w-full h-10 rounded-xl cursor-pointer border border-slate-200">
+          <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Teks Header</label>
+          <div class="relative w-full h-10 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 flex items-center px-3 overflow-hidden group hover:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-400/50 transition-all cursor-pointer">
+            <input type="color" id="style_headerFontColor" value="${currentStyles.headerFontColor || '#ffffff'}" class="absolute -left-10 -top-10 opacity-0 w-[200%] h-[200%] cursor-pointer" oninput="this.nextElementSibling.style.backgroundColor = this.value; this.nextElementSibling.nextElementSibling.textContent = this.value.toUpperCase()">
+            <div class="w-5 h-5 rounded-full shadow-sm ring-1 ring-black/10 flex-shrink-0 transition-colors" style="background-color: ${currentStyles.headerFontColor || '#ffffff'};"></div>
+            <span class="ml-3 text-xs font-mono font-medium text-slate-600 dark:text-slate-300 pointer-events-none">${(currentStyles.headerFontColor || '#ffffff').toUpperCase()}</span>
+          </div>
         </div>
 
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Teks Sel</label>
-          <input type="color" id="style_cellFontColor" value="${currentStyles.cellFontColor || '#000000'}" class="w-full h-10 rounded-xl cursor-pointer border border-slate-200">
+          <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Teks Sel</label>
+          <div class="relative w-full h-10 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700/50 flex items-center px-3 overflow-hidden group hover:border-indigo-400 focus-within:ring-2 focus-within:ring-indigo-400/50 transition-all cursor-pointer">
+            <input type="color" id="style_cellFontColor" value="${currentStyles.cellFontColor || '#000000'}" class="absolute -left-10 -top-10 opacity-0 w-[200%] h-[200%] cursor-pointer" oninput="this.nextElementSibling.style.backgroundColor = this.value; this.nextElementSibling.nextElementSibling.textContent = this.value.toUpperCase()">
+            <div class="w-5 h-5 rounded-full shadow-sm ring-1 ring-black/10 flex-shrink-0 transition-colors" style="background-color: ${currentStyles.cellFontColor || '#000000'};"></div>
+            <span class="ml-3 text-xs font-mono font-medium text-slate-600 dark:text-slate-300 pointer-events-none">${(currentStyles.cellFontColor || '#000000').toUpperCase()}</span>
+          </div>
         </div>
         
         <div>
-          <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1.5">Gaya Font</label>
-          <select id="style_fontFamily" class="w-full h-10 text-xs border border-slate-200 bg-slate-50 rounded-xl px-3 outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 trasition-all">
+          <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Gaya Font</label>
+          <select id="style_fontFamily" class="w-full h-10 text-xs border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/80 dark:text-slate-200 rounded-xl px-3 outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 trasition-all">
             <option value="'Inter', sans-serif" ${currentStyles.fontFamily?.includes('Inter') ? 'selected' : ''}>Inter (Minimalist)</option>
             <option value="'Poppins', sans-serif" ${currentStyles.fontFamily?.includes('Poppins') ? 'selected' : ''}>Poppins (Modern Round)</option>
             <option value="'Roboto', sans-serif" ${currentStyles.fontFamily?.includes('Roboto') ? 'selected' : ''}>Roboto (Professional)</option>
@@ -83,7 +99,7 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
         </div>
         
 
-        <button id="btn_applyStyle" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-xs font-bold rounded-xl hover:from-indigo-700 hover:to-violet-700 transition-all mt-6 uppercase tracking-widest shadow-md shadow-indigo-200 hover:-translate-y-0.5 hover:shadow-lg">
+        <button id="btn_applyStyle" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-500 dark:to-violet-500 text-white text-xs font-bold rounded-xl hover:from-indigo-700 hover:to-violet-700 dark:hover:from-indigo-600 dark:hover:to-violet-600 transition-all mt-6 uppercase tracking-widest shadow-md shadow-indigo-200 dark:shadow-none hover:-translate-y-0.5 hover:shadow-lg">
           Update Desain
         </button>
       </div>

@@ -71,24 +71,24 @@ export function renderInvoice(tableData, containerId) {
     fontSize = '10px';
     padding = '4px 8px';
     sectionMb = 'mb-4';
-    containerPadding = 'p-3';
+    containerPadding = 'p-6';
   } else if (rowCount > 18 && rowCount <= 22) {
     fontSize = '9px';
     padding = '2px 6px';
     sectionMb = 'mb-3';
-    containerPadding = 'px-3 py-2';
+    containerPadding = 'px-6 py-4';
   } else if (rowCount > 22 && rowCount <= 26) {
     fontSize = '8px';
     padding = '1px 5px';
     sectionGap = 'gap-4';
     sectionMb = 'mb-2';
-    containerPadding = 'px-2 py-1';
+    containerPadding = 'px-4 py-3';
   } else if (rowCount > 26) {
     fontSize = '7.5px';
     padding = '1px 3px';
     sectionGap = 'gap-2';
     sectionMb = 'mb-1';
-    containerPadding = 'px-1 py-1';
+    containerPadding = 'px-3 py-2';
   }
 
   // Hitung otomatis subtotal dari kolom "Jumlah" (index 3)
@@ -113,7 +113,7 @@ export function renderInvoice(tableData, containerId) {
       <!-- HEADER AREA (Logo) -->
       <div class="flex flex-col items-center justify-center border-b-4 border-double border-gray-800 pt-8 pb-3 ${sectionMb} relative">
         <div class="w-full flex justify-center relative group">
-          <div class="no-print absolute top-0 right-0 z-10 flex gap-2">
+          <div class="print:hidden absolute top-0 right-0 z-10 flex gap-2">
             <div id="imageControls" class="hidden items-center gap-3 bg-white px-3 py-1.5 rounded-lg shadow-md border border-gray-200">
               <div class="flex gap-1 border-r border-gray-200 pr-2">
                 <button type="button" class="btn-logo-size px-2 py-1 text-[10px] font-bold bg-gray-100 hover:bg-gray-200 rounded transition-colors" data-size="150">S</button>
@@ -137,7 +137,7 @@ export function renderInvoice(tableData, containerId) {
           </div>
           
           <div id="logoContainer" class="${displayLogoUrl ? '' : 'border-2 border-dashed border-gray-200'} min-h-[60px] w-full flex items-center border-none rounded group-hover:border-indigo-300 transition-colors">
-            <span id="logoPlaceholder" class="text-gray-400 no-print text-xs ${displayLogoUrl ? 'hidden' : ''}">Klik icon upload untuk header</span>
+            <span id="logoPlaceholder" class="text-gray-400 print:hidden text-xs ${displayLogoUrl ? 'hidden' : ''}">Klik icon upload untuk header</span>
             <img id="companyLogo" src="${displayLogoUrl}" class="${displayLogoUrl ? '' : 'hidden'} max-w-full object-contain" style="width: 200px;" alt="Header Image">
           </div>
         </div>
@@ -147,8 +147,8 @@ export function renderInvoice(tableData, containerId) {
       <div class="flex flex-row justify-between ${sectionMb} gap-4 text-xs font-medium uppercase tracking-wider">
         <div class="w-1/2">
           <h3 class="text-[10px] font-bold text-black mb-1">PELANGGAN</h3>
-          <textarea id="inv_customerName" class="invoice-field text-sm font-bold text-gray-900 border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400" rows="1" placeholder="Nama Pelanggan">${meta.customerName || ''}</textarea>
-          <textarea id="inv_customerAddress" class="invoice-field text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden mt-1 placeholder-gray-400 text-xs" rows="1" placeholder="Alamat & Kontak">${meta.customerAddress || ''}</textarea>
+          <textarea id="inv_customerName" class="invoice-field text-sm font-bold text-gray-900 border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400 leading-normal py-0.5" rows="1" placeholder="Nama Pelanggan">${meta.customerName || ''}</textarea>
+          <textarea id="inv_customerAddress" class="invoice-field text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden mt-1 placeholder-gray-400 text-xs leading-normal py-0.5" rows="1" placeholder="Alamat & Kontak">${meta.customerAddress || ''}</textarea>
         </div> 
         <div class="w-1/3">
           <div class="grid grid-cols-2 gap-x-2 gap-y-1">
@@ -165,7 +165,7 @@ export function renderInvoice(tableData, containerId) {
         <table class="w-full text-left border-collapse" id="invoiceTable" style="border-color: ${borderColor}; font-size: ${fontSize};">
           <thead>
             <tr>
-              ${tableData.headers.map(h => `<th style="background-color: ${headerBg}; border-color: ${borderColor}; color: ${headerFontColor}; padding: ${padding}; border-width: 1px; border-style: solid; -webkit-print-color-adjust: exact; print-color-adjust: exact;" class="font-extrabold uppercase tracking-wide">${h}</th>`).join('')}
+              ${tableData.headers.map(h => `<th style="background-color: ${headerBg}; border-color: ${borderColor}; color: ${headerFontColor}; padding: ${padding}; border-width: 1px; border-style: solid; -webkit-print-color-adjust: exact; print-color-adjust: exact; text-align: center;" class="font-extrabold uppercase tracking-wide">${h}</th>`).join('')}
             </tr>
           </thead>
           <tbody id="invoiceTableBody">
@@ -242,20 +242,20 @@ export function renderInvoice(tableData, containerId) {
           <!-- LEFT: Company & Account Info -->
           <div class="flex-1 space-y-4">
             <div>
-              <textarea id="inv_companyName" class="invoice-field text-xs font-bold text-gray-900 block border-none outline-none resize-none overflow-hidden bg-transparent w-full mb-1 leading-tight" rows="1" placeholder="Nama Perusahaan">${meta.companyName || defCompanyName}</textarea>
-              <textarea id="inv_companyAddress" class="invoice-field text-[10px] text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden leading-relaxed" rows="1" placeholder="Alamat & Kontak Perusahaan">${meta.companyAddress || defCompanyAddress}</textarea>
+              <textarea id="inv_companyName" class="invoice-field text-xs font-bold text-gray-900 block border-none outline-none resize-none overflow-hidden bg-transparent w-full mb-1 leading-normal py-0.5" rows="1" placeholder="Nama Perusahaan">${meta.companyName || defCompanyName}</textarea>
+              <textarea id="inv_companyAddress" class="invoice-field text-[10px] text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden leading-normal py-0.5" rows="1" placeholder="Alamat & Kontak Perusahaan">${meta.companyAddress || defCompanyAddress}</textarea>
             </div>
             <div>
               <h4 class="text-[10px] font-bold text-black uppercase tracking-widest mb-1">REKENING PEMBAYARAN</h4>
-              <textarea id="inv_accountInfo" class="invoice-field text-[10px] text-black font-medium border-none outline-none w-full bg-transparent resize-none overflow-hidden leading-relaxed" rows="1" placeholder="Nama Bank: 000000 / Atas Nama">${meta.accountInfo || defAccountInfo}</textarea>
+              <textarea id="inv_accountInfo" class="invoice-field text-[10px] text-black font-medium border-none outline-none w-full bg-transparent resize-none overflow-hidden leading-normal py-0.5" rows="1" placeholder="Nama Bank: 000000 / Atas Nama">${meta.accountInfo || defAccountInfo}</textarea>
             </div>
           </div>
 
           <!-- RIGHT: Signature (Hormat Kami) -->
           <div class="w-48 text-center flex flex-col items-center">
             <p class="text-[11px] font-bold text-gray-900 mb-28 uppercase tracking-wider">HORMAT KAMI</p>
-            ${isNoLineTemplate ? '' : '<div class="w-full h-px bg-black mb-1"></div>'}
-            <textarea id="inv_signatureName" class="invoice-field text-center font-bold text-xs text-gray-900 border-none outline-none resize-none overflow-hidden bg-transparent w-full pb-1 leading-tight" rows="1" placeholder="Isi Nama">${meta.signatureName || defSignatureName}</textarea>
+            ${isNoLineTemplate ? '' : '<div class="w-full h-px bg-black mb-2"></div>'}
+            <textarea id="inv_signatureName" class="invoice-field text-center font-bold text-xs text-gray-900 border-none outline-none resize-none overflow-hidden bg-transparent w-full leading-normal py-0.5" rows="1" placeholder="Isi Nama">${meta.signatureName || defSignatureName}</textarea>
           </div>
         </div>
       </div>
@@ -419,11 +419,11 @@ export function renderInvoice(tableData, containerId) {
     if (field.tagName === 'TEXTAREA') {
       const resize = () => {
         field.style.height = 'auto'; // Reset height
-        field.style.height = field.scrollHeight + 'px'; // Set to actual scroll height
+        field.style.height = (field.scrollHeight + 3) + 'px'; // Set to actual scroll height with a bigger buffer (3px) to prevent clipping
       };
       field.addEventListener('input', resize);
       // Run immediately with a tiny delay to ensure CSS is applied
-      setTimeout(resize, 0);
+      setTimeout(resize, 50);
     }
   });
 }

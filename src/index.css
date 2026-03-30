@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;600;700;900&family=Poppins:wght@300;400;500;600;700;800;900&family=Roboto:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&family=Montserrat:wght@400;600;700&family=Lora:ital,wght@0,400;0,700;1,400&family=Outfit:wght@400;600;800&family=Fira+Code:wght@400;600&family=Nunito:wght@400;600;800&family=Oswald:wght@400;600;700&family=Dancing+Script:wght@400;700&display=swap");
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Inter", sans-serif;
 }
@@ -674,4 +676,52 @@ body {
 .invoice-template-nota-kontan .bg-gray-50 {
   background-color: transparent !important;
   border: 2px dashed #9ca3af !important;
+}
+
+@media print {
+  ::placeholder {
+    color: transparent !important;
+  }
+  ::-webkit-input-placeholder {
+    color: transparent !important;
+  }
+  :-moz-placeholder {
+    color: transparent !important;
+  }
+  ::-moz-placeholder {
+    color: transparent !important;
+  }
+  :-ms-input-placeholder {
+    color: transparent !important;
+  }
+  @page {
+    margin: 0;
+    size: auto;
+  }
+  html, body {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  ::-webkit-calendar-picker-indicator,
+  ::-webkit-inner-spin-button,
+  ::-webkit-clear-button {
+    display: none !important;
+    -webkit-appearance: none !important;
+  }
+  input[type="date"] {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background: transparent !important;
+  }
+  /* Extra safeguard against last page break */
+  .print-page-wrapper:last-child {
+    page-break-after: auto !important;
+  }
 }

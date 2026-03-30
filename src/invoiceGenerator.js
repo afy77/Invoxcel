@@ -5,16 +5,24 @@
  */
 import './index.css';
 import { renderInvoice } from './invoiceRenderer.js';
+import { exportToPdf } from './pdfExporter.js';
 import { initStyleController } from './styleController.js';
+import { initDarkMode } from './darkMode.js';
+import { showToast } from './toast.js';
 import html2pdf from 'html2pdf.js';
+
+// Init Dark Mode on load
+initDarkMode();
 
 document.addEventListener('DOMContentLoaded', () => {
   // Ambil data dari sessionStorage
   const rawData = sessionStorage.getItem('invoiceData');
   
   if (!rawData) {
-    alert('Data tabel tidak ditemukan. Kembali ke halaman utama.');
-    window.location.href = '/';
+    showToast('Data tabel tidak ditemukan. Kembali ke halaman utama.', 'error');
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 2000);
     return;
   }
 
@@ -99,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       } catch (err) {
         console.error("Gagal mendownload PDF:", err);
-        alert('Terjadi kendala memproses dokumen PDF. Coba gunakan fitur "Print Invoice".');
+        showToast('Terjadi kendala memproses dokumen PDF. Coba gunakan fitur "Print Invoice".', 'error');
       } finally {
         // Kembalikan placeholder yang dihapus
         if (window._pdf_placeholders) {
@@ -124,7 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   } catch (error) {
     console.error('Error parsing invoice data:', error);
-    alert('Terjadi kesalahan saat memuat data invoice.');
+    showToast('Terjadi kesalahan saat memuat data invoice.', 'error');
   }
 });
 

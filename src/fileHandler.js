@@ -3,6 +3,8 @@
  * Bertanggung jawab untuk menangani input file dan drag & drop.
  */
 
+import { showToast } from './toast.js';
+
 export function initFileHandler(dropZoneId, fileInputId, onFileReady) {
   const dropZone = document.getElementById(dropZoneId);
   const fileInput = document.getElementById(fileInputId);
@@ -44,7 +46,7 @@ function handleFile(file, callback) {
   const fileExtension = file.name.split('.').pop().toLowerCase();
 
   if (!validExtensions.includes(fileExtension)) {
-    alert('Format file tidak didukung. Harap unggah file Excel (.xlsx, .xls) atau CSV.');
+    showToast('Format file tidak didukung. Harap unggah file Excel (.xlsx, .xls) atau CSV.', 'error');
     return;
   }
 

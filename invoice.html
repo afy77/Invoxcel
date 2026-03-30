@@ -63,15 +63,28 @@
       }
     </style>
   </head>
-  <body class="bg-slate-50 text-slate-900 font-sans min-h-screen py-8 selection:bg-indigo-100 selection:text-indigo-900">
+  <body class="bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 font-sans min-h-screen py-8 selection:bg-indigo-100 selection:text-indigo-900 dark:selection:bg-indigo-900/50 dark:selection:text-indigo-100 transition-colors duration-200">
     <div class="max-w-7xl mx-auto mb-6 flex justify-between items-center no-print px-4 flex-wrap gap-4">
-      <button id="btnBack" class="px-5 py-2.5 bg-white text-slate-700 rounded-xl hover:bg-slate-100 hover:text-slate-900 transition-all font-semibold shadow-sm border border-slate-200 hover:shadow flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-slate-500" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      <button id="btnBack" class="px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-white transition-all font-semibold shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-slate-500 dark:text-slate-400" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         Kembali
       </button>
 
-      <div class="flex gap-3">
-        <button id="btnPrint" class="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-indigo-800 transition-all shadow-md shadow-indigo-200 hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-2">
+      <div class="flex items-center gap-4">
+        <button class="theme-toggle-btn relative inline-flex h-8 w-[60px] shrink-0 cursor-pointer border-2 border-transparent items-center rounded-full bg-slate-200 dark:bg-slate-700 transition-colors duration-300 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 shadow-inner" title="Toggle Theme">
+          <span class="sr-only">Toggle dark mode</span>
+          <!-- Track Icons (Background) -->
+          <span class="absolute inset-0 flex h-full w-full items-center justify-between px-2 pointer-events-none">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" class="text-slate-400" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-slate-500"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+          </span>
+          <!-- Thumb -->
+          <span class="theme-toggle-thumb translate-x-0 dark:translate-x-[28px] pointer-events-none absolute left-0 inline-flex h-7 w-7 transform items-center justify-center rounded-full bg-white shadow-md ring-0 transition-transform duration-300 ease-in-out">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500 block dark:hidden"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" class="text-indigo-500 hidden dark:block" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          </span>
+        </button>
+        <button id="btnPrint" class="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 dark:from-indigo-500 dark:to-indigo-600 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-indigo-800 dark:hover:from-indigo-600 dark:hover:to-indigo-700 transition-all shadow-md shadow-indigo-200 dark:shadow-none hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
           Print Invoice
         </button>
@@ -81,7 +94,7 @@
 
     <div class="max-w-7xl mx-auto px-4 lg:flex lg:gap-8 items-start">
       <!-- Invoice Preview (Left) -->
-      <div id="invoiceContainer" class="flex-1 bg-white p-8 rounded-3xl shadow-2xl shadow-indigo-100/40 border border-slate-200 print-container mb-8">
+      <div id="invoiceContainer" class="flex-1 bg-white dark:bg-white text-slate-900 p-8 rounded-3xl shadow-2xl shadow-indigo-100/40 dark:shadow-black/20 border border-slate-200 dark:border-slate-600 print-container mb-8 overflow-x-auto">
         <!-- Invoice content will be rendered here -->
       </div>
 

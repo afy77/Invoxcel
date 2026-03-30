@@ -10,6 +10,12 @@ import { toggleEditMode, addRow, addColumn, deleteColumn, removeEmptyColumns, ed
 import { initStyleController } from './styleController.js';
 import { printTable } from './printManager.js';
 import { exportToPdf } from './pdfExporter.js';
+import { initDarkMode } from './darkMode.js';
+import { showToast } from './toast.js';
+import { renderInvoice } from './invoiceRenderer.js';
+
+// Init Dark Mode on load
+initDarkMode();
 
 // Global State Sederhana
 const globalState = {
@@ -247,11 +253,13 @@ document.addEventListener('DOMContentLoaded', () => {
       renderAll();
     } catch (error) {
       console.error(error);
-      alert('Terjadi kesalahan saat memproses file Excel.');
+      showToast('Terjadi kesalahan saat memproses file Excel.', 'error');
     } finally {
       showLoading(false);
     }
   });
+
+
 });
 
 function showLoading(isLoading) {
