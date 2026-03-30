@@ -105,7 +105,7 @@ export function renderInvoice(tableData, containerId) {
     return num.toLocaleString('id-ID');
   };
 
-  const templateName = s.template || 'default';
+  const templateName = s.template || 'default-noline';
   const isNoLineTemplate = templateName === 'default-noline';
 
   container.innerHTML = `
@@ -198,7 +198,7 @@ export function renderInvoice(tableData, containerId) {
                     }
                   }
                   // Gunakan &nbsp; jika kosong agar border tetap tampil sempurna di semua browser
-                  return `<td style="border-color: ${borderColor}; padding: ${padding}; border-width: 1px; border-style: solid;">${displayVal || '&nbsp;'}</td>`;
+                  return `<td style="border-color: ${borderColor}; padding: ${padding}; border-width: 1px; border-style: solid; text-align: center;">${displayVal || '&nbsp;'}</td>`;
                 }).join('')}
               </tr>
             `).join('')}

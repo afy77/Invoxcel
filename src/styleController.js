@@ -20,8 +20,8 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
         <div>
           <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Template Invoice</label>
           <select id="style_template" class="w-full h-10 text-xs border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/80 dark:text-slate-200 rounded-xl px-3 outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 trasition-all">
-            <option value="default" ${currentStyles.template === 'default' || !currentStyles.template ? 'selected' : ''}>Standard (Default)</option>
-            <option value="default-noline" ${currentStyles.template === 'default-noline' ? 'selected' : ''}>Standard (Tanpa Garis TTD)</option>
+            <option value="default" ${currentStyles.template === 'default' ? 'selected' : ''}>Standard (Dengan Garis TTD)</option>
+            <option value="default-noline" ${currentStyles.template === 'default-noline' || !currentStyles.template ? 'selected' : ''}>Standard (Tanpa Garis TTD)</option>
             <option value="modern" ${currentStyles.template === 'modern' ? 'selected' : ''}>Modern Minimalis</option>
             <option value="corporate" ${currentStyles.template === 'corporate' ? 'selected' : ''}>Corporate Blue</option>
             <option value="elegant" ${currentStyles.template === 'elegant' ? 'selected' : ''}>Elegant Dark</option>
