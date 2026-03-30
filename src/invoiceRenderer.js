@@ -57,6 +57,9 @@ export function renderInvoice(tableData, containerId) {
   const headerFontColor = s.headerFontColor || '#ffffff';
   const cellFontColor = s.cellFontColor || '#000000';
   const fontFamily = s.fontFamily || 'Inter, sans-serif';
+  const headerAlign = s.headerAlign || 'center';
+  const bodyAlign = s.bodyAlign || 'center';
+  const columnAligns = s.columnAligns || []; // Array of alignments for each column
   const accentColor = '#4f46e5';
   
   // SOLUSI UNTUK DATA BANYAK: Ukuran font & padding dinamis agar TETAP 1 LEMBAR
@@ -152,9 +155,9 @@ export function renderInvoice(tableData, containerId) {
         </div> 
         <div class="w-1/3">
           <div class="grid grid-cols-2 gap-x-2 gap-y-1">
-            <div class="text-black">Tanggal:</div>
+            <div class="text-black font-bold">Tanggal:</div>
             <div><input type="date" id="inv_date" class="invoice-field border-none outline-none bg-transparent text-gray-900 font-bold w-full p-0 text-xs" value="${meta.date || today}"></div>
-            <div class="text-black">Jatuh Tempo:</div>
+            <div class="text-black font-bold">Jatuh Tempo:</div>
             <div><input type="date" id="inv_dueDate" class="invoice-field border-none outline-none bg-transparent text-gray-900 font-bold w-full p-0 text-xs" value="${meta.dueDate || nextWeek}"></div>
           </div>
         </div>
@@ -165,7 +168,10 @@ export function renderInvoice(tableData, containerId) {
         <table class="w-full text-left border-collapse" id="invoiceTable" style="border-color: ${borderColor}; font-size: ${fontSize};">
           <thead>
             <tr>
-              ${tableData.headers.map(h => `<th style="background-color: ${headerBg}; border-color: ${borderColor}; color: ${headerFontColor}; padding: ${padding}; border-width: 1px; border-style: solid; -webkit-print-color-adjust: exact; print-color-adjust: exact; text-align: center;" class="font-extrabold uppercase tracking-wide">${h}</th>`).join('')}
+              ${tableData.headers.map((h, idx) => {
+                const align = (columnAligns[idx] && columnAligns[idx].header) || headerAlign;
+                return `<th style="background-color: ${headerBg}; border-color: ${borderColor}; color: ${headerFontColor}; padding: ${padding}; border-width: 1px; border-style: solid; -webkit-print-color-adjust: exact; print-color-adjust: exact; text-align: ${align};" class="font-extrabold uppercase tracking-wide">${h}</th>`;
+              }).join('')}
             </tr>
           </thead>
           <tbody id="invoiceTableBody">
@@ -198,7 +204,8 @@ export function renderInvoice(tableData, containerId) {
                     }
                   }
                   // Gunakan &nbsp; jika kosong agar border tetap tampil sempurna di semua browser
-                  return `<td style="border-color: ${borderColor}; padding: ${padding}; border-width: 1px; border-style: solid; text-align: center;">${displayVal || '&nbsp;'}</td>`;
+                   const align = (columnAligns[idx] && columnAligns[idx].body) || bodyAlign;
+                  return `<td style="border-color: ${borderColor}; padding: ${padding}; border-width: 1px; border-style: solid; text-align: ${align};">${displayVal || '&nbsp;'}</td>`;
                 }).join('')}
               </tr>
             `).join('')}

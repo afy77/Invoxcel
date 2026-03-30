@@ -7,9 +7,13 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
   const panel = document.getElementById(panelId);
   if (!panel) return;
 
-  const currentStyles = targetTableId 
-    ? (globalState.tables.find(t => t.tableId === targetTableId)?.styles || {})
-    : (globalState.tables[0]?.styles || {});
+  const targetTable = targetTableId 
+    ? globalState.tables.find(t => t.tableId === targetTableId)
+    : globalState.tables[0];
+
+  const currentStyles = targetTable?.styles || {};
+  const currentHeaders = targetTable?.headers || [];
+  const currentColumnAligns = currentStyles.columnAligns || [];
 
   // Render UI Panel Styling (Compact Sidebar Version)
   panel.innerHTML = `
@@ -99,6 +103,53 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
         </div>
         
 
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Posisi Header</label>
+            <select id="style_headerAlign" class="w-full h-10 text-xs border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/80 dark:text-slate-200 rounded-xl px-3 outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 trasition-all">
+              <option value="left" ${currentStyles.headerAlign === 'left' ? 'selected' : ''}>Kiri</option>
+              <option value="center" ${currentStyles.headerAlign === 'center' || !currentStyles.headerAlign ? 'selected' : ''}>Tengah</option>
+              <option value="right" ${currentStyles.headerAlign === 'right' ? 'selected' : ''}>Kanan</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1.5">Posisi Isi</label>
+            <select id="style_bodyAlign" class="w-full h-10 text-xs border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700/80 dark:text-slate-200 rounded-xl px-3 outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 trasition-all">
+              <option value="left" ${currentStyles.bodyAlign === 'left' ? 'selected' : ''}>Kiri</option>
+              <option value="center" ${currentStyles.bodyAlign === 'center' || !currentStyles.bodyAlign ? 'selected' : ''}>Tengah</option>
+              <option value="right" ${currentStyles.bodyAlign === 'right' ? 'selected' : ''}>Kanan</option>
+            </select>
+          </div>
+        </div>
+
+        </div>
+
+        <div class="mt-6 border-t border-slate-200/60 dark:border-slate-700/60 pt-4">
+          <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-3">Pengaturan Per Kolom</label>
+          <div class="space-y-3">
+            ${currentHeaders.map((header, idx) => {
+              const align = currentColumnAligns[idx] || { header: 'center', body: 'center' };
+              return `
+              <div class="bg-slate-50 dark:bg-slate-700/30 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 column-align-row" data-column-index="${idx}">
+                <div class="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 uppercase mb-2 truncate" title="${header}">${header}</div>
+                <div class="grid grid-cols-2 gap-2">
+                  <select class="th-align text-[10px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg px-2 h-7 outline-none">
+                    <option value="left" ${align.header === 'left' ? 'selected' : ''}>Header L</option>
+                    <option value="center" ${align.header === 'center' ? 'selected' : ''}>Header C</option>
+                    <option value="right" ${align.header === 'right' ? 'selected' : ''}>Header R</option>
+                  </select>
+                  <select class="td-align text-[10px] bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg px-2 h-7 outline-none">
+                    <option value="left" ${align.body === 'left' ? 'selected' : ''}>Isi L</option>
+                    <option value="center" ${align.body === 'center' ? 'selected' : ''}>Isi C</option>
+                    <option value="right" ${align.body === 'right' ? 'selected' : ''}>Isi R</option>
+                  </select>
+                </div>
+              </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
         <button id="btn_applyStyle" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-500 dark:to-violet-500 text-white text-xs font-bold rounded-xl hover:from-indigo-700 hover:to-violet-700 dark:hover:from-indigo-600 dark:hover:to-violet-600 transition-all mt-6 uppercase tracking-widest shadow-md shadow-indigo-200 dark:shadow-none hover:-translate-y-0.5 hover:shadow-lg">
           Update Desain
         </button>
@@ -115,6 +166,12 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
       headerFontColor: document.getElementById('style_headerFontColor').value,
       cellFontColor: document.getElementById('style_cellFontColor').value,
       fontFamily: document.getElementById('style_fontFamily').value,
+      headerAlign: document.getElementById('style_headerAlign').value,
+      bodyAlign: document.getElementById('style_bodyAlign').value,
+      columnAligns: Array.from(document.querySelectorAll('.column-align-row')).map(row => ({
+        header: row.querySelector('.th-align').value,
+        body: row.querySelector('.td-align').value
+      }))
     };
     
     // Apply and Save
@@ -180,23 +237,29 @@ export function applyStyleToTableDOM(tableId, styles) {
 
   // Terapkan ke Header
   const ths = tableEl.querySelectorAll('th');
-  ths.forEach(th => {
+  ths.forEach((th, idx) => {
     th.style.backgroundColor = styles.headerBg;
     th.style.borderColor = styles.borderColor;
     th.style.color = styles.headerFontColor;
     th.style.fontFamily = styles.fontFamily;
     th.style.fontSize = styles.fontSize;
     th.style.padding = styles.padding;
+    const colAlign = styles.columnAligns && styles.columnAligns[idx];
+    th.style.textAlign = (colAlign && colAlign.header) || styles.headerAlign || 'center';
   });
 
   // Terapkan ke Sel
   const tds = tableEl.querySelectorAll('td');
-  tds.forEach(td => {
+  const headersCount = ths.length;
+  tds.forEach((td, idx) => {
     td.style.borderColor = styles.borderColor;
     td.style.color = styles.cellFontColor;
     td.style.fontFamily = styles.fontFamily;
     td.style.fontSize = styles.fontSize;
     td.style.padding = styles.padding;
+    const colIdx = idx % headersCount;
+    const colAlign = styles.columnAligns && styles.columnAligns[colIdx];
+    td.style.textAlign = (colAlign && colAlign.body) || styles.bodyAlign || 'center';
   });
 
   // Terapkan ke Tabel itu sendiri
