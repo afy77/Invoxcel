@@ -111,6 +111,34 @@ export function renderInvoice(tableData, containerId) {
   const templateName = s.template || 'default-noline';
   const isNoLineTemplate = templateName === 'default-noline';
 
+  // Pastikan kolom PPN ada di headers dan rows
+  let finalHeaders = [...tableData.headers];
+  let ppnIdx = finalHeaders.findIndex(h => h.toUpperCase().includes('PPN'));
+  
+  if (ppnIdx === -1) {
+    // Sesuai permintaan: Nama, Jumlah, Harga, Subtotal, PPN (ujung kanan)
+    finalHeaders.push('PPN');
+    ppnIdx = finalHeaders.length - 1;
+    
+    // Tambahkan data 0 di setiap baris untuk kolom PPN di paling akhir
+    tableData.rows = tableData.rows.map(row => {
+      const newRow = [...row];
+      newRow.push('0');
+      return newRow;
+    });
+  } else if (ppnIdx !== finalHeaders.length - 1) {
+    // Jika PPN sudah ada tapi tidak di ujung, pindahkan ke ujung
+    const ppnHeader = finalHeaders.splice(ppnIdx, 1)[0];
+    finalHeaders.push(ppnHeader);
+    
+    tableData.rows = tableData.rows.map(row => {
+      const newRow = [...row];
+      const ppnVal = newRow.splice(ppnIdx, 1)[0];
+      newRow.push(ppnVal);
+      return newRow;
+    });
+  }
+
   container.innerHTML = `
     <div class="max-w-4xl print:max-w-none w-full mx-auto ${containerPadding} bg-white invoice-template-${templateName}" style="font-family: ${fontFamily}; color: ${cellFontColor};">
       <!-- HEADER AREA (Logo) -->
@@ -141,7 +169,7 @@ export function renderInvoice(tableData, containerId) {
           
           <div id="logoContainer" class="${displayLogoUrl ? '' : 'border-2 border-dashed border-gray-200'} min-h-[60px] w-full flex items-center border-none rounded group-hover:border-indigo-300 transition-colors">
             <span id="logoPlaceholder" class="text-gray-400 print:hidden text-xs ${displayLogoUrl ? 'hidden' : ''}">Klik icon upload untuk header</span>
-            <img id="companyLogo" src="${displayLogoUrl}" class="${displayLogoUrl ? '' : 'hidden'} max-w-full object-contain" style="width: 200px;" alt="Header Image">
+            <img id="companyLogo" src="${displayLogoUrl}" class="${displayLogoUrl ? '' : 'hidden'} max-w-full object-contain" style="width: ${sheetNameLower.includes('protein') ? '600px' : '400px'};" alt="Header Image">
           </div>
         </div>
       </div>
@@ -154,7 +182,7 @@ export function renderInvoice(tableData, containerId) {
           <textarea id="inv_customerAddress" class="invoice-field text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden mt-1 placeholder-gray-400 text-xs leading-normal py-0.5" rows="1" placeholder="Alamat & Kontak">${meta.customerAddress || ''}</textarea>
         </div> 
         <div class="w-1/3">
-          <div class="grid grid-cols-2 gap-x-2 gap-y-1">
+          <div class="grid grid-cols-2 gap-x-2 gap-y-1 mt-5">
             <div class="text-black font-bold">Tanggal:</div>
             <div><input type="date" id="inv_date" class="invoice-field border-none outline-none bg-transparent text-gray-900 font-bold w-full p-0 text-xs" value="${meta.date || today}"></div>
             <div class="text-black font-bold">Jatuh Tempo:</div>
@@ -168,16 +196,37 @@ export function renderInvoice(tableData, containerId) {
         <table class="w-full text-left border-collapse" id="invoiceTable" style="border-color: ${borderColor}; font-size: ${fontSize};">
           <thead>
             <tr>
-              ${tableData.headers.map((h, idx) => {
+              ${finalHeaders.map((h, idx) => {
                 const align = (columnAligns[idx] && columnAligns[idx].header) || headerAlign;
-                return `<th style="background-color: ${headerBg}; border-color: ${borderColor}; color: ${headerFontColor}; padding: ${padding}; border-width: 1px; border-style: solid; -webkit-print-color-adjust: exact; print-color-adjust: exact; text-align: ${align};" class="font-extrabold uppercase tracking-wide">${h}</th>`;
+                let widthStyle = '';
+                const title = typeof h === 'string' ? h.toUpperCase() : '';
+                
+                if (title.includes('NAMA') || idx === 0) {
+                  widthStyle = 'width: 32%;';
+                } else if (title.includes('JUMLAH') || idx === 1) {
+                  widthStyle = 'width: 9%;';
+                } else if (title.includes('HARGA') || idx === 2) {
+                  widthStyle = 'width: 15%;';
+                } else if (title.includes('SUB') || title.includes('TOTAL') || idx === 3) {
+                  widthStyle = 'width: 19%;';
+                } else if (title.includes('PPN')) {
+                  widthStyle = 'width: 25%;';
+                }
+                
+                // Memaksa HARGA SATUAN menjadi 2 baris
+                let displayH = h;
+                if (title === 'HARGA SATUAN') {
+                  displayH = 'HARGA<br/>SATUAN';
+                }
+                
+                return `<th style="background-color: ${headerBg}; border-color: ${borderColor}; color: ${headerFontColor}; padding: ${padding}; border-width: 1px; border-style: solid; -webkit-print-color-adjust: exact; print-color-adjust: exact; text-align: ${align}; ${widthStyle}" class="font-extrabold uppercase tracking-wide leading-tight">${displayH}</th>`;
               }).join('')}
             </tr>
           </thead>
           <tbody id="invoiceTableBody">
             ${tableData.rows.map((row) => `
               <tr>
-                ${tableData.headers.map((_h, idx) => {
+                ${finalHeaders.map((_h, idx) => {
                   let cell = row[idx];
                   let displayVal = (cell !== undefined && cell !== null) ? cell : '';
 
@@ -195,8 +244,9 @@ export function renderInvoice(tableData, containerId) {
                     }
                   }
 
-                  // Format Rupiah for 3rd (index 2) and 4th (index 3) columns ONLY
-                  if ((idx === 2 || idx === 3) && displayVal !== '' && !displayVal.toString().includes('Rp')) {
+                  // Format Rupiah for columns (Harga, Subtotal, PPN)
+                  const isCurrencyCol = idx >= 2 || upperH.includes('PPN');
+                  if (isCurrencyCol && displayVal !== '' && !displayVal.toString().includes('Rp')) {
                     const cleaned = displayVal.toString().replace(/[^0-9]/g, '');
                     const number = parseInt(cleaned, 10);
                     if (!isNaN(number)) {
@@ -204,13 +254,16 @@ export function renderInvoice(tableData, containerId) {
                     }
                   }
                   // Gunakan &nbsp; jika kosong agar border tetap tampil sempurna di semua browser
-                   const align = (columnAligns[idx] && columnAligns[idx].body) || bodyAlign;
+                   let align = (columnAligns[idx] && columnAligns[idx].body) || bodyAlign;
+                   if (upperH === 'NAMA BARANG') {
+                     align = 'left';
+                   }
                   return `<td style="border-color: ${borderColor}; padding: ${padding}; border-width: 1px; border-style: solid; text-align: ${align};">${displayVal || '&nbsp;'}</td>`;
                 }).join('')}
               </tr>
             `).join('')}
           </tbody>
-          <tfoot style="border-top: 1px solid ${borderColor};"><tr><td colspan="${tableData.headers.length}"></td></tr></tfoot>
+          <tfoot style="border-top: 1px solid ${borderColor};"><tr><td colspan="${finalHeaders.length}"></td></tr></tfoot>
         </table>
       </div>
 
@@ -304,7 +357,10 @@ export function renderInvoice(tableData, containerId) {
   const presetBtns = document.querySelectorAll('.btn-logo-size');
 
   // Load saved settings from localStorage
-  const savedWidth = localStorage.getItem('preferredLogoWidth') || '250';
+  const isProtein = sheetNameLower.includes('protein');
+  const defaultWidth = isProtein ? '600' : '400';
+  
+  const savedWidth = localStorage.getItem('preferredLogoWidth') || defaultWidth;
   const savedAlign = localStorage.getItem('preferredLogoAlign') || 'center';
 
   const updateLogoWidth = (width) => {
