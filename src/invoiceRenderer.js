@@ -178,8 +178,10 @@ export function renderInvoice(tableData, containerId) {
       <div class="flex flex-row justify-between ${sectionMb} gap-4 text-xs font-medium uppercase tracking-wider">
         <div class="w-1/2">
           <h3 class="text-[10px] font-bold text-black mb-1">PELANGGAN</h3>
-          <textarea id="inv_customerName" class="invoice-field text-sm font-bold text-gray-900 border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400 leading-normal py-0.5" rows="1" placeholder="Nama Pelanggan">${meta.customerName || ''}</textarea>
-          <textarea id="inv_customerAddress" class="invoice-field text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden mt-1 placeholder-gray-400 text-xs leading-normal py-0.5" rows="1" placeholder="Alamat & Kontak">${meta.customerAddress || ''}</textarea>
+          <div class="flex flex-col gap-y-1">
+            <textarea id="inv_customerName" class="invoice-field text-sm font-bold text-gray-900 border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400 leading-tight py-0" rows="1" placeholder="Nama Pelanggan">${meta.customerName || ''}</textarea>
+            <textarea id="inv_customerAddress" class="invoice-field text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400 text-xs leading-tight py-0" rows="1" placeholder="Alamat & Kontak">${meta.customerAddress || ''}</textarea>
+          </div>
         </div> 
         <div class="w-1/3">
           <div class="grid grid-cols-2 gap-x-2 gap-y-1 mt-5">
@@ -273,14 +275,14 @@ export function renderInvoice(tableData, containerId) {
         <!-- TOTALS (Vertical Layout) -->
         <div class="flex justify-end pr-2 md:pr-4">
           <div class="w-72 md:w-80 space-y-1">
-            <div class="flex justify-between items-center py-1 border-b border-gray-100 italic px-2">
+            <div class="flex justify-between items-center py-1 border-b border-gray-100  px-2">
               <span class="text-black text-[10px] uppercase font-bold">SUB TOTAL</span>
               <div class="flex items-center font-bold text-gray-800 text-xs">
                 <span class="mr-1">Rp</span>
                 <input type="text" id="inv_subtotal" class="invoice-field total-input border-none outline-none bg-transparent text-right w-40 font-bold pr-2 py-1 not-italic" placeholder="0" value="${meta.subtotal || toRupiahStatic(calculatedSubtotal)}">
               </div>
             </div>
-            <div class="flex justify-between items-center py-1 border-b border-gray-100 italic px-2">
+            <div class="flex justify-between items-center py-1 border-b border-gray-100  px-2">
               <span class="text-black text-[10px] uppercase font-bold">PPN</span>
               <div class="flex items-center font-bold text-gray-800 text-xs">
                 <span class="mr-1">Rp</span>
