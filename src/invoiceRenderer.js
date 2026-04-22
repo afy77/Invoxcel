@@ -180,7 +180,7 @@ export function renderInvoice(tableData, containerId) {
             <input type="file" id="logoUpload" accept="image/*" class="hidden">
           </div>
           
-          <div id="logoContainer" class="${displayLogoUrl ? '' : 'border-2 border-dashed border-gray-200'} min-h-[60px] w-full flex items-center border-none rounded group-hover:border-indigo-300 transition-colors">
+          <div id="logoContainer" class="${displayLogoUrl ? '' : 'border-2 border-dashed border-gray-200'} min-h-[60px] w-full flex items-center justify-start border-none rounded group-hover:border-indigo-300 transition-colors">
             <span id="logoPlaceholder" class="text-gray-400 print:hidden text-xs ${displayLogoUrl ? 'hidden' : ''}">Klik icon upload untuk header</span>
             <img id="companyLogo" src="${displayLogoUrl}" class="${displayLogoUrl ? '' : 'hidden'} max-w-full object-contain" style="width: ${defLogoWidth}px;" alt="Header Image">
           </div>
@@ -390,8 +390,8 @@ export function renderInvoice(tableData, containerId) {
   // Load saved settings from localStorage
   const defaultWidth = defLogoWidth;
   
-  const storageKeyWidth = `preferredLogoWidth_${tableData.tableId || 'global'}`;
-  const storageKeyAlign = `preferredLogoAlign_${tableData.tableId || 'global'}`;
+  const storageKeyWidth = `preferredLogoWidth_v2_${tableData.tableId || 'global'}`;
+  const storageKeyAlign = `preferredLogoAlign_v2_${tableData.tableId || 'global'}`;
   
   const savedWidth = localStorage.getItem(storageKeyWidth) || defaultWidth;
   const savedAlign = localStorage.getItem(storageKeyAlign) || 'start';
