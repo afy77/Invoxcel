@@ -51,12 +51,14 @@ export function renderInvoice(tableData, containerId) {
 
   // Logo Size Defaults
   let defLogoWidth = '400';
-  if (tableData.tableId === 'table_4') {
+  const isProtein = sheetNameLower.includes('protein');
+  const isKarbo = sheetNameLower.includes('karbo');
+  const isBumbu = sheetNameLower.includes('bumbu') || sheetNameLower.includes('keringan');
+
+  if (tableData.tableId === 'table_4' || isKarbo || isProtein) {
     defLogoWidth = '600';
-  } else if (tableData.tableId === 'table_5') {
+  } else if (tableData.tableId === 'table_5' || isBumbu) {
     defLogoWidth = '450';
-  } else if (sheetNameLower.includes('protein')) {
-    defLogoWidth = '600';
   }
   
   const displayLogoUrl = meta.logoBase64 || defaultLogoSrc;
@@ -160,6 +162,7 @@ export function renderInvoice(tableData, containerId) {
                 <button type="button" class="btn-logo-size px-2 py-1 text-[10px] font-bold bg-gray-100 hover:bg-gray-200 rounded transition-colors" data-size="150">S</button>
                 <button type="button" class="btn-logo-size px-2 py-1 text-[10px] font-bold bg-gray-100 hover:bg-gray-200 rounded transition-colors" data-size="250">M</button>
                 <button type="button" class="btn-logo-size px-2 py-1 text-[10px] font-bold bg-gray-100 hover:bg-gray-200 rounded transition-colors" data-size="400">L</button>
+                <button type="button" class="btn-logo-size px-2 py-1 text-[10px] font-bold bg-gray-100 hover:bg-gray-200 rounded transition-colors" data-size="600">XL</button>
               </div>
               <div class="flex gap-1 border-r border-gray-200 pr-2">
                 <button type="button" class="btn-logo-align px-2 py-1 text-[10px] font-bold bg-gray-100 hover:bg-gray-200 rounded transition-colors" data-align="start" title="Align Left">L</button>
@@ -387,14 +390,17 @@ export function renderInvoice(tableData, containerId) {
   // Load saved settings from localStorage
   const defaultWidth = defLogoWidth;
   
-  const savedWidth = localStorage.getItem('preferredLogoWidth') || defaultWidth;
-  const savedAlign = localStorage.getItem('preferredLogoAlign') || 'center';
+  const storageKeyWidth = `preferredLogoWidth_${tableData.tableId || 'global'}`;
+  const storageKeyAlign = `preferredLogoAlign_${tableData.tableId || 'global'}`;
+  
+  const savedWidth = localStorage.getItem(storageKeyWidth) || defaultWidth;
+  const savedAlign = localStorage.getItem(storageKeyAlign) || 'center';
 
   const updateLogoWidth = (width) => {
     if (companyLogo) {
       companyLogo.style.width = `${width}px`;
       if (logoWidthInput) logoWidthInput.value = width;
-      localStorage.setItem('preferredLogoWidth', width);
+      localStorage.setItem(storageKeyWidth, width);
     }
   };
 
@@ -402,7 +408,7 @@ export function renderInvoice(tableData, containerId) {
     if (logoContainer) {
       logoContainer.classList.remove('justify-start', 'justify-center', 'justify-end');
       logoContainer.classList.add(`justify-${align}`);
-      localStorage.setItem('preferredLogoAlign', align);
+      localStorage.setItem(storageKeyAlign, align);
     }
   };
 
