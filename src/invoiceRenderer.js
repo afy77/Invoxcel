@@ -48,6 +48,16 @@ export function renderInvoice(tableData, containerId) {
     defAccountInfo = 'ACOUNT: 1420228726 / BEGJA KEMAYANGAN CV (IDR)';
     defSignatureName = 'RENDRA WIJAYA';
   }
+
+  // Logo Size Defaults
+  let defLogoWidth = '400';
+  if (tableData.tableId === 'table_4') {
+    defLogoWidth = '600';
+  } else if (tableData.tableId === 'table_5') {
+    defLogoWidth = '450';
+  } else if (sheetNameLower.includes('protein')) {
+    defLogoWidth = '600';
+  }
   
   const displayLogoUrl = meta.logoBase64 || defaultLogoSrc;
 
@@ -120,10 +130,10 @@ export function renderInvoice(tableData, containerId) {
     finalHeaders.push('PPN');
     ppnIdx = finalHeaders.length - 1;
     
-    // Tambahkan data 0 di setiap baris untuk kolom PPN di paling akhir
+    // Tambahkan data kosong di setiap baris untuk kolom PPN di paling akhir
     tableData.rows = tableData.rows.map(row => {
       const newRow = [...row];
-      newRow.push('0');
+      newRow.push('');
       return newRow;
     });
   } else if (ppnIdx !== finalHeaders.length - 1) {
@@ -169,7 +179,7 @@ export function renderInvoice(tableData, containerId) {
           
           <div id="logoContainer" class="${displayLogoUrl ? '' : 'border-2 border-dashed border-gray-200'} min-h-[60px] w-full flex items-center border-none rounded group-hover:border-indigo-300 transition-colors">
             <span id="logoPlaceholder" class="text-gray-400 print:hidden text-xs ${displayLogoUrl ? 'hidden' : ''}">Klik icon upload untuk header</span>
-            <img id="companyLogo" src="${displayLogoUrl}" class="${displayLogoUrl ? '' : 'hidden'} max-w-full object-contain" style="width: ${sheetNameLower.includes('protein') ? '600px' : '400px'};" alt="Header Image">
+            <img id="companyLogo" src="${displayLogoUrl}" class="${displayLogoUrl ? '' : 'hidden'} max-w-full object-contain" style="width: ${defLogoWidth}px;" alt="Header Image">
           </div>
         </div>
       </div>
@@ -252,7 +262,11 @@ export function renderInvoice(tableData, containerId) {
                     const cleaned = displayVal.toString().replace(/[^0-9]/g, '');
                     const number = parseInt(cleaned, 10);
                     if (!isNaN(number)) {
-                      displayVal = 'Rp ' + number.toLocaleString('id-ID');
+                      if (upperH.includes('PPN') && number === 0) {
+                        displayVal = '';
+                      } else {
+                        displayVal = 'Rp ' + number.toLocaleString('id-ID');
+                      }
                     }
                   }
                   // Gunakan &nbsp; jika kosong agar border tetap tampil sempurna di semua browser
@@ -285,8 +299,8 @@ export function renderInvoice(tableData, containerId) {
             <div class="flex justify-between items-center py-1 border-b border-gray-100  px-2">
               <span class="text-black text-[10px] uppercase font-bold">PPN</span>
               <div class="flex items-center font-bold text-gray-800 text-xs">
-                <span class="mr-1">Rp</span>
-                <input type="text" id="inv_ppn" class="invoice-field total-input border-none outline-none bg-transparent text-right w-40 font-bold pr-2 py-1 not-italic" placeholder="0" value="${meta.ppn || '0'}">
+                <span class="mr-1 ppn-prefix ${(!meta.ppn || meta.ppn === '0') ? 'hidden' : ''}">Rp</span>
+                <input type="text" id="inv_ppn" class="invoice-field total-input border-none outline-none bg-transparent text-right w-40 font-bold pr-2 py-1 not-italic" placeholder=" " value="${(meta.ppn && meta.ppn !== '0') ? meta.ppn : ''}">
               </div>
             </div>
             <div class="flex justify-between items-center py-2 bg-gray-50 px-2 rounded mt-2 shadow-sm" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
@@ -346,6 +360,18 @@ export function renderInvoice(tableData, containerId) {
     input.addEventListener('input', (e) => {
       const formatted = formatRupiah(e.target.value);
       e.target.value = formatted;
+      
+      // Update PPN prefix visibility
+      if (e.target.id === 'inv_ppn') {
+        const prefix = container.querySelector('.ppn-prefix');
+        if (prefix) {
+          if (e.target.value && e.target.value !== '0') {
+            prefix.classList.remove('hidden');
+          } else {
+            prefix.classList.add('hidden');
+          }
+        }
+      }
     });
   });
 
@@ -359,8 +385,7 @@ export function renderInvoice(tableData, containerId) {
   const presetBtns = document.querySelectorAll('.btn-logo-size');
 
   // Load saved settings from localStorage
-  const isProtein = sheetNameLower.includes('protein');
-  const defaultWidth = isProtein ? '600' : '400';
+  const defaultWidth = defLogoWidth;
   
   const savedWidth = localStorage.getItem('preferredLogoWidth') || defaultWidth;
   const savedAlign = localStorage.getItem('preferredLogoAlign') || 'center';
