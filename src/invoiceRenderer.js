@@ -394,7 +394,7 @@ export function renderInvoice(tableData, containerId) {
   const storageKeyAlign = `preferredLogoAlign_${tableData.tableId || 'global'}`;
   
   const savedWidth = localStorage.getItem(storageKeyWidth) || defaultWidth;
-  const savedAlign = localStorage.getItem(storageKeyAlign) || 'center';
+  const savedAlign = localStorage.getItem(storageKeyAlign) || 'start';
 
   const updateLogoWidth = (width) => {
     if (companyLogo) {
