@@ -49,9 +49,11 @@
             <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">Unggah File Excel</h2>
             <p class="text-slate-500 dark:text-slate-400 mb-8 max-w-sm mx-auto">Drag & drop file .xlsx atau .xls di sini, atau klik untuk memilih file dari komputer Anda.</p>
             <input type="file" id="fileInput" class="hidden" accept=".xlsx, .xls, .csv" />
-            <button class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-500 dark:to-violet-500 text-white font-medium rounded-xl hover:from-indigo-700 hover:to-violet-700 dark:hover:from-indigo-600 dark:hover:to-violet-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900 transition-all duration-300 transform hover:-translate-y-0.5">
-              Pilih File Excel
-            </button>
+            <div class="flex justify-center">
+              <button id="btnPilihFile" class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 dark:from-indigo-500 dark:to-violet-500 text-white font-medium rounded-xl hover:from-indigo-700 hover:to-violet-700 dark:hover:from-indigo-600 dark:hover:to-violet-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900 transition-all duration-300 transform hover:-translate-y-0.5">
+                Pilih File Excel
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -62,13 +64,19 @@
         <span class="ml-3 text-gray-600 dark:text-gray-300 font-medium">Memproses file...</span>
       </div>
 
-
+      <div class="max-w-7xl mx-auto mb-8 flex justify-end no-print px-4">
+        <button id="btnPrintAll" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all flex items-center gap-2 font-bold shadow-md shadow-indigo-100 dark:shadow-none">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+          Cetak Semua Invoice
+        </button>
+      </div>
 
       <!-- Tables Container -->
-      <div id="tablesContainer" class="space-y-8 print:hidden"></div>
+      <div id="tablesContainer" class="space-y-8 pb-12">
+        <!-- Tables will be rendered here -->
+      </div>
     </main>
 
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
-

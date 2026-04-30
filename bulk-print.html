@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cetak Semua Invoice</title>
+    <style>
+      @media print {
+        ::placeholder { color: transparent !important; }
+        @page { margin: 0; size: auto; }
+        html, body { background-color: white !important; margin: 0 !important; padding: 0 !important; }
+        .no-print { display: none !important; }
+        .invoice-page {
+          page-break-after: always !important;
+          page-break-inside: avoid !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          width: 100% !important;
+        }
+        .invoice-page:last-child {
+          page-break-after: auto !important;
+        }
+      }
+      .invoice-page {
+        margin-bottom: 2rem;
+        background: white;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      }
+      @media print {
+        .invoice-page {
+          box-shadow: none !important;
+          margin-bottom: 0 !important;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-slate-100 dark:bg-slate-900 min-h-screen py-8">
+    <div class="max-w-4xl mx-auto mb-6 flex justify-between items-center no-print px-4">
+      <button onclick="window.location.href='/'" class="px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-semibold shadow-sm border border-slate-200 dark:border-slate-700 flex items-center gap-2">
+        Kembali
+      </button>
+      <button onclick="window.print()" class="px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-xl shadow-lg flex items-center gap-2">
+        Konfirmasi Cetak Semua
+      </button>
+    </div>
+
+    <div id="bulkContainer" class="flex flex-col items-center">
+      <!-- Invoices will be rendered here -->
+    </div>
+
+    <script type="module">
+      import './src/index.css';
+      import { renderInvoice } from './src/invoiceRenderer.js';
+      import { initDarkMode } from './src/darkMode.js';
+
+      initDarkMode();
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const rawData = sessionStorage.getItem('bulkInvoiceData');
+        if (!rawData) {
+          alert('Data tidak ditemukan.');
+          window.location.href = '/';
+          return;
+        }
+
+        const tables = JSON.parse(rawData);
+        const container = document.getElementById('bulkContainer');
+
+        tables.forEach((table, idx) => {
+          const pageDiv = document.createElement('div');
+          pageDiv.className = 'invoice-page w-full max-w-4xl';
+          pageDiv.id = `invoice_page_${idx}`;
+          container.appendChild(pageDiv);
+          
+          renderInvoice(table, pageDiv.id);
+        });
+      });
+    </script>
+  </body>
+</html>

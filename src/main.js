@@ -1,7 +1,4 @@
-/**
- * main.js
- * Entry point aplikasi. Menghubungkan semua module.
- */
+import * as XLSX from 'xlsx';
 import './index.css';
 import { initFileHandler } from './fileHandler.js';
 import { parseExcelFile } from './tableParser.js';
@@ -206,12 +203,25 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAll();
   }
 
+  document.getElementById('btnPrintAll')?.addEventListener('click', () => {
+    if (globalState.tables.length === 0) return showToast('Tidak ada data tabel untuk dicetak.', 'error');
+    
+    // Simpan semua tabel ke sessionStorage
+    sessionStorage.setItem('bulkInvoiceData', JSON.stringify(globalState.tables));
+    window.location.href = '/bulk-print.html';
+  });
+
   // Inisialisasi File Handler
   initFileHandler('dropZone', 'fileInput', async (file) => {
     try {
       showLoading(true);
       // Parse file Excel
       let newTables = await parseExcelFile(file);
+
+      // VALIDASI KHUSUS: Cek apakah ada 5 tabel
+      if (newTables.length < 5) {
+        showToast(`Peringatan: Hanya ditemukan ${newTables.length} tabel. Pastikan Excel memiliki 5 kategori harian.`, 'error');
+      }
 
       // Helper formatting rupiah
       const toRupiah = (val) => {
@@ -236,10 +246,17 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: ['Nama Barang', 'JUMLAH', 'HARGA SATUAN', 'SUB TOTAL'],
           rows: table.rows.map(row => {
             const newRow = [...row];
+            
+            // Auto Calculation logic during import
+            const cleanNum = (s) => parseInt(s?.toString().replace(/[^0-9]/g, ''), 10) || 0;
+            const qty = cleanNum(newRow[1]);
+            const price = cleanNum(newRow[2]);
+            const subtotal = qty * price;
+
             if (newRow[0] !== undefined && typeof newRow[0] === 'string') newRow[0] = newRow[0].toUpperCase();
-            if (newRow[1] !== undefined) newRow[1] = toQty(newRow[1]);
-            if (newRow[2] !== undefined) newRow[2] = toRupiah(newRow[2]);
-            if (newRow[3] !== undefined) newRow[3] = toRupiah(newRow[3]);
+            newRow[1] = toQty(qty.toString());
+            newRow[2] = toRupiah(price.toString());
+            newRow[3] = toRupiah(subtotal.toString());
             return newRow;
           })
         };
@@ -251,6 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Render tabel
       renderAll();
+      showToast('File Excel berhasil diproses!');
     } catch (error) {
       console.error(error);
       showToast('Terjadi kesalahan saat memproses file Excel.', 'error');

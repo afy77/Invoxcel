@@ -136,9 +136,11 @@ export function addRow(tableId, globalState, position = 'bottom', relativeRowInd
     Hapus
   `;
   btnDeleteRow.onclick = (e) => {
-    e.target.closest('tr').remove();
-    if (globalState && tableId) {
-      saveTableState(tableId, globalState);
+    if (window.confirm('Hapus baris ini?')) {
+      e.target.closest('tr').remove();
+      if (globalState && tableId) {
+        saveTableState(tableId, globalState);
+      }
     }
   };
   actionWrapper.appendChild(btnDeleteRow);
@@ -250,25 +252,41 @@ export function saveTableState(tableId, globalState) {
   // Update rows
   const rows = tableEl.querySelectorAll('tbody tr');
   tableData.rows = Array.from(rows).map((tr, idx) => {
-    // Reset dataset index for consistency after DOM manipulation
     tr.dataset.rowIndex = idx; 
     const cells = tr.querySelectorAll('td:not(.action-col)');
-    return Array.from(cells).map((td, colIdx) => {
-      let val = td.textContent.trim();
-      
+    
+    // 1. Ambil data asli dari DOM
+    let rawData = Array.from(cells).map(td => td.textContent.trim());
+    
+    // 2. Bersihkan angka untuk kalkulasi
+    const cleanNum = (str) => {
+      const cleaned = str.replace(/[^0-9]/g, '');
+      return parseInt(cleaned, 10) || 0;
+    };
+
+    const qty = cleanNum(rawData[1] || '0');
+    const price = cleanNum(rawData[2] || '0');
+    const subtotal = qty * price;
+
+    // 3. Update DOM dan Kembalikan data terformat
+    return rawData.map((val, colIdx) => {
+      let formattedVal = val;
+      const td = cells[colIdx];
+
       if (colIdx === 0 && val) {
-        val = val.toUpperCase();
-        if (td.textContent !== val) td.textContent = val;
+        formattedVal = val.toUpperCase();
       } else if (colIdx === 1) {
-        val = toQty(val);
-        if (td.textContent !== val) td.textContent = val;
-      } else if (colIdx === 2 || colIdx === 3) {
-        val = toRupiah(val);
-        // Update the DOM as well for immediate feedback
-        if (td.textContent !== val) td.textContent = val;
+        formattedVal = toQty(qty.toString());
+      } else if (colIdx === 2) {
+        formattedVal = toRupiah(price.toString());
+      } else if (colIdx === 3) {
+        formattedVal = toRupiah(subtotal.toString());
       }
-      
-      return val;
+
+      if (td.textContent !== formattedVal) {
+        td.textContent = formattedVal;
+      }
+      return formattedVal;
     });
   });
 }

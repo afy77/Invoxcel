@@ -12,67 +12,55 @@ export async function parseExcelFile(file) {
       try {
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
-        const tables = [];
+        const finalTables = [];
         let tableCounter = 1;
+
+        // Custom Categories default
+        const customNames = ['Sayur', 'Buah', 'Protein', 'Karbo', 'Bumbu & Keringan'];
 
         // Iterasi setiap sheet
         workbook.SheetNames.forEach((sheetName) => {
           const worksheet = workbook.Sheets[sheetName];
-          
-          // Konversi sheet ke array of arrays (2D array)
           const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
           
           if (jsonData.length === 0) return;
 
-          // Deteksi area data (tabel)
-          // Jika dalam satu sheet ada multiple tabel terpisah, pisahkan berdasarkan baris kosong
-          
-          let currentTableRows = [];
+          let allRows = [];
           let currentHeaders = [];
-          let isHeader = true;
+          let foundHeader = false;
 
           for (let i = 0; i < jsonData.length; i++) {
             const row = jsonData[i];
-            const isEmptyRow = row.every(cell => cell === '' || cell === null || cell === undefined);
+            
+            // Cek apakah baris kosong
+            const isEmptyRow = row.every(cell => cell === '' || cell === null || cell === undefined || cell.toString().trim() === '');
+            if (isEmptyRow) continue; // Lewati baris kosong di tengah data
 
-            if (isEmptyRow) {
-              if (currentTableRows.length > 0 || currentHeaders.length > 0) {
-                const customNames = ['Sayur', 'Buah', 'Protein', 'Karbo', 'Bumbu & Keringan'];
-                const templateName = tableCounter <= customNames.length ? customNames[tableCounter - 1] : sheetName;
-                tables.push({
-                  sheetName: templateName,
-                  tableId: `table_${tableCounter++}`,
-                  headers: currentHeaders,
-                  rows: currentTableRows
-                });
-                currentTableRows = [];
-                currentHeaders = [];
-                isHeader = true;
-              }
+            const filledCells = row.filter(cell => cell !== '' && cell !== null && cell !== undefined);
+            const firstCell = row[0] ? row[0].toString().trim() : '';
+            
+            const isHeaderRow = firstCell.toUpperCase().includes('NAMA') && filledCells.length > 1;
+
+            if (isHeaderRow && !foundHeader) {
+                currentHeaders = row.map(h => h.toString().trim());
+                foundHeader = true;
             } else {
-              if (isHeader) {
-                currentHeaders = row;
-                isHeader = false;
-              } else {
-                currentTableRows.push(row);
-              }
+                // Semua baris (termasuk judul kategori seperti 'BUAH') masuk sebagai data
+                allRows.push(row);
             }
           }
 
-          // Push tabel terakhir jika ada
-          if (currentTableRows.length > 0 || currentHeaders.length > 0) {
-            const customNames = ['Sayur', 'Buah', 'Protein', 'Karbo', 'Bumbu & Keringan'];
-            const templateName = tableCounter <= customNames.length ? customNames[tableCounter - 1] : sheetName;
-            tables.push({
-              sheetName: templateName,
+          if (allRows.length > 0) {
+            finalTables.push({
+              sheetName: sheetName.toUpperCase() === 'SHEET1' ? 'DATA HARIAN' : sheetName,
               tableId: `table_${tableCounter++}`,
-              headers: currentHeaders,
-              rows: currentTableRows
+              headers: currentHeaders.length > 0 ? currentHeaders : ['Nama Barang', 'JUMLAH', 'HARGA SATUAN', 'SUB TOTAL'],
+              rows: allRows
             });
           }
         });
 
-        resolve(tables);
+        resolve(finalTables);
       } catch (error) {
         reject(error);
       }

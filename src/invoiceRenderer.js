@@ -157,7 +157,7 @@ export function renderInvoice(tableData, containerId) {
       <div class="flex flex-col items-center justify-center border-b-4 border-double border-gray-800 pt-8 pb-3 ${sectionMb} relative">
         <div class="w-full flex justify-center relative group">
           <div class="print:hidden absolute top-0 right-0 z-10 flex gap-2">
-            <div id="imageControls" class="hidden items-center gap-3 bg-white px-3 py-1.5 rounded-lg shadow-md border border-gray-200">
+            <div class="imageControls hidden items-center gap-3 bg-white px-3 py-1.5 rounded-lg shadow-md border border-gray-200">
               <div class="flex gap-1 border-r border-gray-200 pr-2">
                 <button type="button" class="btn-logo-size px-2 py-1 text-[10px] font-bold bg-gray-100 hover:bg-gray-200 rounded transition-colors" data-size="150">S</button>
                 <button type="button" class="btn-logo-size px-2 py-1 text-[10px] font-bold bg-gray-100 hover:bg-gray-200 rounded transition-colors" data-size="250">M</button>
@@ -170,19 +170,19 @@ export function renderInvoice(tableData, containerId) {
                 <button type="button" class="btn-logo-align px-2 py-1 text-[10px] font-bold bg-gray-100 hover:bg-gray-200 rounded transition-colors" data-align="end" title="Align Right">R</button>
               </div>
               <div class="flex items-center gap-1">
-                <input type="number" id="logoWidthInput" class="w-14 px-1 py-1 text-xs border border-gray-200 rounded outline-none focus:border-indigo-400" min="50" max="1000" value="250">
+                <input type="number" class="logoWidthInput w-14 px-1 py-1 text-xs border border-gray-200 rounded outline-none focus:border-indigo-400" min="50" max="1000" value="250">
                 <span class="text-[10px] font-bold text-gray-400 uppercase">px</span>
               </div>
             </div>
-            <label for="logoUpload" class="cursor-pointer p-2 bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors shadow-sm" title="Upload Gambar Header">
+            <label class="cursor-pointer p-2 bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors shadow-sm" title="Upload Gambar Header">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+              <input type="file" class="logoUpload hidden" accept="image/*">
             </label>
-            <input type="file" id="logoUpload" accept="image/*" class="hidden">
           </div>
           
-          <div id="logoContainer" class="${displayLogoUrl ? '' : 'border-2 border-dashed border-gray-200'} min-h-[60px] w-full flex items-center justify-start border-none rounded group-hover:border-indigo-300 transition-colors">
-            <span id="logoPlaceholder" class="text-gray-400 print:hidden text-xs ${displayLogoUrl ? 'hidden' : ''}">Klik icon upload untuk header</span>
-            <img id="companyLogo" src="${displayLogoUrl}" class="${displayLogoUrl ? '' : 'hidden'} max-w-full object-contain" style="width: ${defLogoWidth}px;" alt="Header Image">
+          <div class="logoContainer ${displayLogoUrl ? '' : 'border-2 border-dashed border-gray-200'} min-h-[60px] w-full flex items-center justify-start border-none rounded group-hover:border-indigo-300 transition-colors">
+            <span class="logoPlaceholder text-gray-400 print:hidden text-xs ${displayLogoUrl ? 'hidden' : ''}">Klik icon upload untuk header</span>
+            <img class="companyLogo ${displayLogoUrl ? '' : 'hidden'} max-w-full object-contain" style="width: ${defLogoWidth}px;" src="${displayLogoUrl}" alt="Header Image">
           </div>
         </div>
       </div>
@@ -192,23 +192,23 @@ export function renderInvoice(tableData, containerId) {
         <div class="w-1/2">
           <h3 class="text-[10px] font-bold text-black mb-1">PELANGGAN</h3>
           <div class="flex flex-col gap-y-1">
-            <textarea id="inv_customerName" class="invoice-field text-sm font-bold text-gray-900 border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400 leading-tight py-0" rows="1" placeholder="Nama Pelanggan">${meta.customerName || ''}</textarea>
-            <textarea id="inv_customerAddress" class="invoice-field text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400 text-xs leading-tight py-0" rows="1" placeholder="Alamat & Kontak">${meta.customerAddress || ''}</textarea>
+            <textarea class="invoice-field inv_customerName text-sm font-bold text-gray-900 border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400 leading-tight py-0" rows="1" placeholder="Nama Pelanggan">${meta.customerName || ''}</textarea>
+            <textarea class="invoice-field inv_customerAddress text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400 text-xs leading-tight py-0" rows="1" placeholder="Alamat & Kontak">${meta.customerAddress || ''}</textarea>
           </div>
         </div> 
         <div class="w-1/3">
           <div class="grid grid-cols-2 gap-x-2 gap-y-1 mt-5">
             <div class="text-black font-bold">Tanggal:</div>
-            <div><input type="date" id="inv_date" class="invoice-field border-none outline-none bg-transparent text-gray-900 font-bold w-full p-0 text-xs" value="${meta.date || today}"></div>
+            <div><input type="date" class="invoice-field inv_date border-none outline-none bg-transparent text-gray-900 font-bold w-full p-0 text-xs" value="${meta.date || today}"></div>
             <div class="text-black font-bold">Jatuh Tempo:</div>
-            <div><input type="date" id="inv_dueDate" class="invoice-field border-none outline-none bg-transparent text-gray-900 font-bold w-full p-0 text-xs" value="${meta.dueDate || nextWeek}"></div>
+            <div><input type="date" class="invoice-field inv_dueDate border-none outline-none bg-transparent text-gray-900 font-bold w-full p-0 text-xs" value="${meta.dueDate || nextWeek}"></div>
           </div>
         </div>
       </div>
 
       <!-- TABLE SECTION -->
       <div class="${sectionMb}">
-        <table class="w-full text-left border-collapse" id="invoiceTable" style="border-color: ${borderColor}; font-size: ${fontSize};">
+        <table class="w-full text-left border-collapse" style="border-color: ${borderColor}; font-size: ${fontSize};">
           <thead>
             <tr>
               ${finalHeaders.map((h, idx) => {
@@ -238,49 +238,64 @@ export function renderInvoice(tableData, containerId) {
               }).join('')}
             </tr>
           </thead>
-          <tbody id="invoiceTableBody">
-            ${tableData.rows.map((row) => `
-              <tr>
-                ${finalHeaders.map((_h, idx) => {
-                  let cell = row[idx];
-                  let displayVal = (cell !== undefined && cell !== null) ? cell : '';
+          <tbody>
+            ${tableData.rows.map((row) => {
+              const filledCells = row.filter(cell => cell !== '' && cell !== null && cell !== undefined && cell.toString().trim() !== '');
+              const isCategoryRow = filledCells.length === 1 && isNaN(parseInt(row[0]));
 
-                  const upperH = typeof _h === 'string' ? _h.toUpperCase() : '';
-                  if (upperH === 'NAMA BARANG' && displayVal !== '') {
-                    displayVal = displayVal.toString().toUpperCase();
-                  }
+              if (isCategoryRow) {
+                return `
+                  <tr>
+                    <td colspan="${finalHeaders.length}" style="background-color: #f8fafc; border-color: ${borderColor}; padding: 6px 12px; border-width: 1px; border-style: solid; font-weight: 800; font-size: 11px; color: #1e293b; text-transform: uppercase; letter-spacing: 0.05em; -webkit-print-color-adjust: exact; print-color-adjust: exact;">
+                      ${row[0].toString().toUpperCase()}
+                    </td>
+                  </tr>
+                `;
+              }
 
-                  // Quantity/JUMLAH: thousands separator for index 1
-                  if (idx === 1 && displayVal !== '') {
-                    const cleaned = displayVal.toString().replace(/[^0-9]/g, '');
-                    const number = parseInt(cleaned, 10);
-                    if (!isNaN(number)) {
-                      displayVal = number.toLocaleString('id-ID');
+              return `
+                <tr>
+                  ${finalHeaders.map((_h, idx) => {
+                    let cell = row[idx];
+                    let displayVal = (cell !== undefined && cell !== null) ? cell : '';
+
+                    const upperH = typeof _h === 'string' ? _h.toUpperCase() : '';
+                    if (upperH === 'NAMA BARANG' && displayVal !== '') {
+                      displayVal = displayVal.toString().toUpperCase();
                     }
-                  }
 
-                  // Format Rupiah for columns (Harga, Subtotal, PPN)
-                  const isCurrencyCol = idx >= 2 || upperH.includes('PPN');
-                  if (isCurrencyCol && displayVal !== '' && !displayVal.toString().includes('Rp')) {
-                    const cleaned = displayVal.toString().replace(/[^0-9]/g, '');
-                    const number = parseInt(cleaned, 10);
-                    if (!isNaN(number)) {
-                      if (upperH.includes('PPN') && number === 0) {
-                        displayVal = '';
-                      } else {
-                        displayVal = 'Rp ' + number.toLocaleString('id-ID');
+                    // Quantity/JUMLAH: thousands separator for index 1
+                    if (idx === 1 && displayVal !== '') {
+                      const cleaned = displayVal.toString().replace(/[^0-9]/g, '');
+                      const number = parseInt(cleaned, 10);
+                      if (!isNaN(number)) {
+                        displayVal = number.toLocaleString('id-ID');
                       }
                     }
-                  }
-                  // Gunakan &nbsp; jika kosong agar border tetap tampil sempurna di semua browser
-                   let align = (columnAligns[idx] && columnAligns[idx].body) || bodyAlign;
-                   if (upperH === 'NAMA BARANG') {
-                     align = 'left';
-                   }
-                  return `<td style="border-color: ${borderColor}; padding: ${padding}; border-width: 1px; border-style: solid; text-align: ${align};">${displayVal || '&nbsp;'}</td>`;
-                }).join('')}
-              </tr>
-            `).join('')}
+
+                    // Format Rupiah for columns (Harga, Subtotal, PPN)
+                    const isCurrencyCol = idx >= 2 || upperH.includes('PPN');
+                    if (isCurrencyCol && displayVal !== '' && !displayVal.toString().includes('Rp')) {
+                      const cleaned = displayVal.toString().replace(/[^0-9]/g, '');
+                      const number = parseInt(cleaned, 10);
+                      if (!isNaN(number)) {
+                        if (upperH.includes('PPN') && number === 0) {
+                          displayVal = '';
+                        } else {
+                          displayVal = 'Rp ' + number.toLocaleString('id-ID');
+                        }
+                      }
+                    }
+                    // Gunakan &nbsp; jika kosong agar border tetap tampil sempurna di semua browser
+                     let align = (columnAligns[idx] && columnAligns[idx].body) || bodyAlign;
+                     if (upperH === 'NAMA BARANG') {
+                       align = 'left';
+                     }
+                    return `<td style="border-color: ${borderColor}; padding: ${padding}; border-width: 1px; border-style: solid; text-align: ${align};">${displayVal || '&nbsp;'}</td>`;
+                  }).join('')}
+                </tr>
+              `;
+            }).join('')}
           </tbody>
           <tfoot style="border-top: 1px solid ${borderColor};"><tr><td colspan="${finalHeaders.length}"></td></tr></tfoot>
         </table>
@@ -288,7 +303,6 @@ export function renderInvoice(tableData, containerId) {
 
       <!-- BOTTOM SECTION: Totals, Info, & Signature -->
       <div class="flex flex-col ${sectionGap}">
-        <!-- TOTALS (Aligned Right, but small width) -->
         <!-- TOTALS (Vertical Layout) -->
         <div class="flex justify-end pr-2 md:pr-4">
           <div class="w-72 md:w-80 space-y-1">
@@ -296,21 +310,21 @@ export function renderInvoice(tableData, containerId) {
               <span class="text-black text-[10px] uppercase font-bold">SUB TOTAL</span>
               <div class="flex items-center font-bold text-gray-800 text-xs">
                 <span class="mr-1">Rp</span>
-                <input type="text" id="inv_subtotal" class="invoice-field total-input border-none outline-none bg-transparent text-right w-40 font-bold pr-2 py-1 not-italic" placeholder="0" value="${meta.subtotal || toRupiahStatic(calculatedSubtotal)}">
+                <input type="text" class="invoice-field inv_subtotal total-input border-none outline-none bg-transparent text-right w-40 font-bold pr-2 py-1 not-italic" placeholder="0" value="${meta.subtotal || toRupiahStatic(calculatedSubtotal)}">
               </div>
             </div>
             <div class="flex justify-between items-center py-1 border-b border-gray-100  px-2">
               <span class="text-black text-[10px] uppercase font-bold">PPN</span>
               <div class="flex items-center font-bold text-gray-800 text-xs">
                 <span class="mr-1 ppn-prefix ${(!meta.ppn || meta.ppn === '0') ? 'hidden' : ''}">Rp</span>
-                <input type="text" id="inv_ppn" class="invoice-field total-input border-none outline-none bg-transparent text-right w-40 font-bold pr-2 py-1 not-italic" placeholder=" " value="${(meta.ppn && meta.ppn !== '0') ? meta.ppn : ''}">
+                <input type="text" class="invoice-field inv_ppn total-input border-none outline-none bg-transparent text-right w-40 font-bold pr-2 py-1 not-italic" placeholder=" " value="${(meta.ppn && meta.ppn !== '0') ? meta.ppn : ''}">
               </div>
             </div>
             <div class="flex justify-between items-center py-2 bg-gray-50 px-2 rounded mt-2 shadow-sm" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
               <span class="text-base font-bold text-gray-800 uppercase tracking-tight">TOTAL</span>
               <div class="flex items-center font-black text-black text-base">
                 <span class="mr-1">Rp</span>
-                <input type="text" id="inv_total" class="invoice-field total-input border-none outline-none bg-transparent text-right w-40 font-black pr-2 py-1 not-italic" placeholder="0" value="${meta.total || toRupiahStatic(calculatedSubtotal)}">
+                <input type="text" class="invoice-field inv_total total-input border-none outline-none bg-transparent text-right w-40 font-black pr-2 py-1 not-italic" placeholder="0" value="${meta.total || toRupiahStatic(calculatedSubtotal)}">
               </div>
             </div>
           </div>
@@ -321,12 +335,12 @@ export function renderInvoice(tableData, containerId) {
           <!-- LEFT: Company & Account Info -->
           <div class="flex-1 space-y-4">
             <div>
-              <textarea id="inv_companyName" class="invoice-field text-xs font-bold text-gray-900 block border-none outline-none resize-none overflow-hidden bg-transparent w-full mb-1 leading-normal py-0.5" rows="1" placeholder="Nama Perusahaan">${meta.companyName || defCompanyName}</textarea>
-              <textarea id="inv_companyAddress" class="invoice-field text-[10px] text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden leading-normal py-0.5" rows="1" placeholder="Alamat & Kontak Perusahaan">${meta.companyAddress || defCompanyAddress}</textarea>
+              <textarea class="invoice-field inv_companyName text-xs font-bold text-gray-900 block border-none outline-none resize-none overflow-hidden bg-transparent w-full mb-1 leading-normal py-0.5" rows="1" placeholder="Nama Perusahaan">${meta.companyName || defCompanyName}</textarea>
+              <textarea class="invoice-field inv_companyAddress text-[10px] text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden leading-normal py-0.5" rows="1" placeholder="Alamat & Kontak Perusahaan">${meta.companyAddress || defCompanyAddress}</textarea>
             </div>
             <div>
               <h4 class="text-[10px] font-bold text-black uppercase tracking-widest mb-1">REKENING PEMBAYARAN</h4>
-              <textarea id="inv_accountInfo" class="invoice-field text-[10px] text-black font-medium border-none outline-none w-full bg-transparent resize-none overflow-hidden leading-normal py-0.5" rows="1" placeholder="Nama Bank: 000000 / Atas Nama">${meta.accountInfo || defAccountInfo}</textarea>
+              <textarea class="invoice-field inv_accountInfo text-[10px] text-black font-medium border-none outline-none w-full bg-transparent resize-none overflow-hidden leading-normal py-0.5" rows="1" placeholder="Nama Bank: 000000 / Atas Nama">${meta.accountInfo || defAccountInfo}</textarea>
             </div>
           </div>
 
@@ -334,7 +348,7 @@ export function renderInvoice(tableData, containerId) {
           <div class="w-48 text-center flex flex-col items-center">
             <p class="text-[11px] font-bold text-gray-900 mb-28 uppercase tracking-wider">HORMAT KAMI</p>
             ${isNoLineTemplate ? '' : '<div class="w-full h-px bg-black mb-2"></div>'}
-            <textarea id="inv_signatureName" class="invoice-field text-center font-bold text-xs text-gray-900 border-none outline-none resize-none overflow-hidden bg-transparent w-full leading-normal py-0.5" rows="1" placeholder="Isi Nama">${meta.signatureName || defSignatureName}</textarea>
+            <textarea class="invoice-field inv_signatureName text-center font-bold text-xs text-gray-900 border-none outline-none resize-none overflow-hidden bg-transparent w-full leading-normal py-0.5" rows="1" placeholder="Isi Nama">${meta.signatureName || defSignatureName}</textarea>
           </div>
         </div>
       </div>
@@ -365,8 +379,8 @@ export function renderInvoice(tableData, containerId) {
       e.target.value = formatted;
       
       // Update PPN prefix visibility
-      if (e.target.id === 'inv_ppn') {
-        const prefix = container.querySelector('.ppn-prefix');
+      if (e.target.classList.contains('inv_ppn')) {
+        const prefix = e.target.closest('div').querySelector('.ppn-prefix');
         if (prefix) {
           if (e.target.value && e.target.value !== '0') {
             prefix.classList.remove('hidden');
@@ -379,13 +393,13 @@ export function renderInvoice(tableData, containerId) {
   });
 
   // Event Listeners for Logo Upload & Size
-  const logoUpload = document.getElementById('logoUpload');
-  const companyLogo = document.getElementById('companyLogo');
-  const logoPlaceholder = document.getElementById('logoPlaceholder');
-  const logoContainer = document.getElementById('logoContainer');
-  const imageControls = document.getElementById('imageControls');
-  const logoWidthInput = document.getElementById('logoWidthInput');
-  const presetBtns = document.querySelectorAll('.btn-logo-size');
+  const logoUpload = container.querySelector('.logoUpload');
+  const companyLogo = container.querySelector('.companyLogo');
+  const logoPlaceholder = container.querySelector('.logoPlaceholder');
+  const logoContainer = container.querySelector('.logoContainer');
+  const imageControls = container.querySelector('.imageControls');
+  const logoWidthInput = container.querySelector('.logoWidthInput');
+  const presetBtns = container.querySelectorAll('.btn-logo-size');
 
   // Load saved settings from localStorage
   const defaultWidth = defLogoWidth;
@@ -455,7 +469,7 @@ export function renderInvoice(tableData, containerId) {
     });
 
     // Alignment Buttons
-    const alignBtns = document.querySelectorAll('.btn-logo-align');
+    const alignBtns = container.querySelectorAll('.btn-logo-align');
     alignBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         updateLogoAlignment(btn.dataset.align);
@@ -473,14 +487,17 @@ export function renderInvoice(tableData, containerId) {
   // --- PERSISTENCE LOGIC ---
   const saveInvoiceMeta = () => {
     const fields = container.querySelectorAll('.invoice-field');
-    const newMeta = { ...meta }; // Keep existing meta like themeId and logo
+    const newMeta = { ...meta }; 
     fields.forEach(field => {
-      const key = field.id.replace('inv_', '');
-      newMeta[key] = field.value;
+      // Find which class defines the field key (inv_...)
+      const keyClass = Array.from(field.classList).find(c => c.startsWith('inv_'));
+      if (keyClass) {
+        const key = keyClass.replace('inv_', '');
+        newMeta[key] = field.value;
+      }
     });
 
-    // Capture the logo if it exists
-    const currentLogo = document.getElementById('companyLogo');
+    const currentLogo = container.querySelector('.companyLogo');
     if (currentLogo && !currentLogo.classList.contains('hidden') && currentLogo.src.startsWith('data:')) {
       newMeta.logoBase64 = currentLogo.src;
     }
@@ -497,9 +514,15 @@ export function renderInvoice(tableData, containerId) {
           localStorage.setItem(storageKey, JSON.stringify(tables));
           localStorage.setItem('invoxcel_timestamp', Date.now().toString());
           
-          // Also update session storage so it's consistent for this session
-          tableData.invoiceMeta = newMeta;
-          sessionStorage.setItem('invoiceData', JSON.stringify(tableData));
+          // Also update session storage if this matches the active session invoice
+          const activeSession = sessionStorage.getItem('invoiceData');
+          if (activeSession) {
+              const activeData = JSON.parse(activeSession);
+              if (activeData.tableId === tableData.tableId) {
+                  activeData.invoiceMeta = newMeta;
+                  sessionStorage.setItem('invoiceData', JSON.stringify(activeData));
+              }
+          }
         }
       } catch (e) {
         console.error('Failed to sync invoice meta', e);
@@ -514,11 +537,10 @@ export function renderInvoice(tableData, containerId) {
     // Auto resize textareas
     if (field.tagName === 'TEXTAREA') {
       const resize = () => {
-        field.style.height = 'auto'; // Reset height
-        field.style.height = (field.scrollHeight + 3) + 'px'; // Set to actual scroll height with a bigger buffer (3px) to prevent clipping
+        field.style.height = 'auto'; 
+        field.style.height = (field.scrollHeight + 3) + 'px';
       };
       field.addEventListener('input', resize);
-      // Run immediately with a tiny delay to ensure CSS is applied
       setTimeout(resize, 50);
     }
   });
