@@ -26,6 +26,8 @@ export default defineConfig(({mode}) => {
         input: {
           main: path.resolve(__dirname, 'index.html'),
           invoice: path.resolve(__dirname, 'invoice.html'),
+          bulkPrint: path.resolve(__dirname, 'bulk-print.html'),
+          akumulasi: path.resolve(__dirname, 'akumulasi_pembayaran.html'),
         },
       },
     },
