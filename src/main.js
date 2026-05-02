@@ -16,7 +16,13 @@ initDarkMode();
 
 // Global State Sederhana
 const globalState = {
-  tables: [] // Menyimpan data tabel yang sedang aktif
+  tables: [], // Menyimpan data tabel yang sedang aktif
+  globalInvoiceMeta: {
+    customerName: '',
+    customerAddress: '',
+    date: '',
+    dueDate: ''
+  }
 };
 
 const storageKey  = 'invoxcel_tables';
@@ -26,6 +32,7 @@ const EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 jam dalam milidetik
 function saveToLocalStorage() {
   localStorage.setItem(storageKey, JSON.stringify(globalState.tables));
   localStorage.setItem(timestampKey, Date.now().toString());
+  localStorage.setItem('invoxcel_global_meta', JSON.stringify(globalState.globalInvoiceMeta));
 }
 
 function loadFromLocalStorage() {
@@ -39,6 +46,16 @@ function loadFromLocalStorage() {
     localStorage.removeItem('excelTableManager_tables');
     console.log('Data lokal dihapus karena sudah melebihi 24 jam.');
     return false;
+  }
+
+  // Load Global Meta
+  const savedGlobalMeta = localStorage.getItem('invoxcel_global_meta');
+  if (savedGlobalMeta) {
+    try {
+      globalState.globalInvoiceMeta = JSON.parse(savedGlobalMeta);
+    } catch (e) {
+      console.error('Failed to parse global meta', e);
+    }
   }
 
   const saved = localStorage.getItem(storageKey) || localStorage.getItem('excelTableManager_tables');
@@ -164,27 +181,56 @@ document.addEventListener('DOMContentLoaded', () => {
         const cardEl = document.getElementById(`card_${tableId}`);
         if (cardEl) cardEl.querySelector('.btn-save-changes')?.classList.replace('hidden', 'flex');
       },
-      onPrint: (tableId) => printTable(tableId),
+      onPrint: (tableId) => {
+        saveTableState(tableId, globalState); // Auto-save edits
+        printTable(tableId);
+      },
       onPdf: (tableId) => {
+        saveTableState(tableId, globalState); // Auto-save edits
         const tableData = globalState.tables.find(t => t.tableId === tableId);
         if (tableData) exportToPdf(tableId, tableData.sheetName);
       },
       onCreateInvoice: (tableId) => {
+        saveTableState(tableId, globalState); // Auto-save edits before creating invoice
         const tableData = globalState.tables.find(t => t.tableId === tableId);
         if (tableData) {
-          sessionStorage.setItem('invoiceData', JSON.stringify(tableData));
+          // Merge global metadata if available and local field is empty
+          const localMeta = tableData.invoiceMeta || {};
+          const mergedMeta = {
+            ...localMeta,
+            customerName: localMeta.customerName || globalState.globalInvoiceMeta.customerName,
+            customerAddress: localMeta.customerAddress || globalState.globalInvoiceMeta.customerAddress,
+            date: localMeta.date || globalState.globalInvoiceMeta.date,
+            dueDate: localMeta.dueDate || globalState.globalInvoiceMeta.dueDate
+          };
+
+          const finalTableData = {
+            ...tableData,
+            invoiceMeta: mergedMeta
+          };
+
+          sessionStorage.setItem('invoiceData', JSON.stringify(finalTableData));
           window.location.href = '/invoice.html';
         }
       },
       onCreateRowInvoice: (tableId, rowIndex) => {
+        saveTableState(tableId, globalState); // Auto-save edits before creating invoice
         const tableData = globalState.tables.find(t => t.tableId === tableId);
         if (tableData && tableData.rows[rowIndex]) {
-          // Buat salinan data tabel tapi hanya berisi 1 baris yang dipilih
+          // Merge global metadata
+          const localMeta = tableData.invoiceMeta || {};
+          const mergedMeta = {
+            ...localMeta,
+            customerName: localMeta.customerName || globalState.globalInvoiceMeta.customerName,
+            customerAddress: localMeta.customerAddress || globalState.globalInvoiceMeta.customerAddress,
+            date: localMeta.date || globalState.globalInvoiceMeta.date,
+            dueDate: localMeta.dueDate || globalState.globalInvoiceMeta.dueDate
+          };
+
           const singleRowData = {
             ...tableData,
             rows: [tableData.rows[rowIndex]],
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                // Jangan bawa metadata invoice lama agar tidak bentrok
-            invoiceMeta: {} 
+            invoiceMeta: mergedMeta 
           };
           sessionStorage.setItem('invoiceData', JSON.stringify(singleRowData));
           window.location.href = '/invoice.html';
@@ -200,8 +246,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Load saved data if exists
   if (loadFromLocalStorage() && globalState.tables.length > 0) {
+    updateGlobalMetaUI();
     renderAll();
   }
+
+  // Initial UI state
+  toggleGlobalMetaVisibility();
+
+  function toggleGlobalMetaVisibility() {
+    const section = document.getElementById('globalMetaSection');
+    if (section) {
+      if (globalState.tables.length > 0) section.classList.remove('hidden');
+      else section.classList.add('hidden');
+    }
+  }
+
+  function updateGlobalMetaUI() {
+    const meta = globalState.globalInvoiceMeta;
+    const today = new Date().toISOString().split('T')[0];
+    const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+    document.getElementById('globalCustomerName').value = meta.customerName || '';
+    document.getElementById('globalCustomerAddress').value = meta.customerAddress || '';
+    document.getElementById('globalDate').value = meta.date || today;
+    document.getElementById('globalDueDate').value = meta.dueDate || nextWeek;
+    
+    // Sync back to state if defaults were used
+    if (!meta.date) globalState.globalInvoiceMeta.date = today;
+    if (!meta.dueDate) globalState.globalInvoiceMeta.dueDate = nextWeek;
+  }
+
+  // Global Meta Listeners
+  const globalMetaInputs = ['globalCustomerName', 'globalCustomerAddress', 'globalDate', 'globalDueDate'];
+  globalMetaInputs.forEach(id => {
+    document.getElementById(id)?.addEventListener('input', (e) => {
+      const key = id.replace('global', '').charAt(0).toLowerCase() + id.replace('global', '').slice(1);
+      globalState.globalInvoiceMeta[key] = e.target.value;
+      saveToLocalStorage();
+    });
+  });
 
   document.getElementById('btnPrintAll')?.addEventListener('click', () => {
     if (globalState.tables.length === 0) return showToast('Tidak ada data tabel untuk dicetak.', 'error');
@@ -267,6 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
       saveToLocalStorage();
       
       // Render tabel
+      toggleGlobalMetaVisibility();
       renderAll();
       showToast('File Excel berhasil diproses!');
     } catch (error) {

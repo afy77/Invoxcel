@@ -199,9 +199,9 @@ export function renderInvoice(tableData, containerId) {
         <div class="w-1/3">
           <div class="grid grid-cols-2 gap-x-2 gap-y-1 mt-5">
             <div class="text-black font-bold">Tanggal:</div>
-            <div><input type="date" class="invoice-field inv_date border-none outline-none bg-transparent text-gray-900 font-bold w-full p-0 text-xs" value="${meta.date || today}"></div>
+            <div><input type="date" onclick="this.showPicker()" class="invoice-field inv_date border-none outline-none bg-transparent text-gray-900 font-bold w-full px-1 py-0.5 text-sm cursor-pointer hover:bg-gray-50 rounded transition-colors" value="${meta.date || today}"></div>
             <div class="text-black font-bold">Jatuh Tempo:</div>
-            <div><input type="date" class="invoice-field inv_dueDate border-none outline-none bg-transparent text-gray-900 font-bold w-full p-0 text-xs" value="${meta.dueDate || nextWeek}"></div>
+            <div><input type="date" onclick="this.showPicker()" class="invoice-field inv_dueDate border-none outline-none bg-transparent text-gray-900 font-bold w-full px-1 py-0.5 text-sm cursor-pointer hover:bg-gray-50 rounded transition-colors" value="${meta.dueDate || nextWeek}"></div>
           </div>
         </div>
       </div>

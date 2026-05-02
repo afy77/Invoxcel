@@ -16,47 +16,65 @@ export async function parseExcelFile(file) {
         let tableCounter = 1;
 
         // Custom Categories default
-        const customNames = ['Sayur', 'Buah', 'Protein', 'Karbo', 'Bumbu & Keringan'];
+        const customNames = ['SAYUR', 'BUAH', 'PROTEIN', 'KARBOHIDRAT', 'BUMBU & KERINGAN'];
 
-        // Iterasi setiap sheet
         workbook.SheetNames.forEach((sheetName) => {
           const worksheet = workbook.Sheets[sheetName];
           const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
           
           if (jsonData.length === 0) return;
 
-          let allRows = [];
-          let currentHeaders = [];
-          let foundHeader = false;
+          let currentTableName = '';
+          let currentHeaders = ['Nama Barang', 'JUMLAH', 'HARGA SATUAN', 'SUB TOTAL'];
+          let currentTableRows = [];
 
           for (let i = 0; i < jsonData.length; i++) {
             const row = jsonData[i];
             
             // Cek apakah baris kosong
             const isEmptyRow = row.every(cell => cell === '' || cell === null || cell === undefined || cell.toString().trim() === '');
-            if (isEmptyRow) continue; // Lewati baris kosong di tengah data
+            if (isEmptyRow) continue;
 
             const filledCells = row.filter(cell => cell !== '' && cell !== null && cell !== undefined);
             const firstCell = row[0] ? row[0].toString().trim() : '';
             
             const isHeaderRow = firstCell.toUpperCase().includes('NAMA') && filledCells.length > 1;
+            const isTitleRow = filledCells.length === 1 && firstCell !== '';
 
-            if (isHeaderRow && !foundHeader) {
-                currentHeaders = row.map(h => h.toString().trim());
-                foundHeader = true;
+            if (isHeaderRow || isTitleRow) {
+                // Jika sudah ada data, simpan tabel sebelumnya
+                if (currentTableRows.length > 0) {
+                    finalTables.push({
+                        sheetName: currentTableName || (finalTables.length < customNames.length ? customNames[finalTables.length] : `TABEL ${tableCounter}`),
+                        tableId: `table_${tableCounter++}`,
+                        headers: currentHeaders,
+                        rows: currentTableRows
+                    });
+                    currentTableRows = [];
+                    // Reset nama untuk tabel baru kecuali ini baris judul
+                    if (isHeaderRow) currentTableName = '';
+                }
+
+                if (isTitleRow) {
+                    currentTableName = firstCell.toUpperCase();
+                } else if (isHeaderRow) {
+                    currentHeaders = row.map(h => h.toString().trim());
+                }
             } else {
-                // Semua baris (termasuk judul kategori seperti 'BUAH') masuk sebagai data
-                allRows.push(row);
+                currentTableRows.push(row);
             }
           }
 
-          if (allRows.length > 0) {
+          // Push tabel terakhir di sheet ini
+          if (currentTableRows.length > 0) {
             finalTables.push({
-              sheetName: sheetName.toUpperCase() === 'SHEET1' ? 'DATA HARIAN' : sheetName,
+              sheetName: currentTableName || (finalTables.length < customNames.length ? customNames[finalTables.length] : `TABEL ${tableCounter}`),
               tableId: `table_${tableCounter++}`,
-              headers: currentHeaders.length > 0 ? currentHeaders : ['Nama Barang', 'JUMLAH', 'HARGA SATUAN', 'SUB TOTAL'],
-              rows: allRows
+              headers: currentHeaders,
+              rows: currentTableRows
             });
+            currentTableRows = [];
+            currentTableName = '';
           }
         });
 

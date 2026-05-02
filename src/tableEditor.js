@@ -169,6 +169,11 @@ export function deleteColumn(tableId, colIndex, globalState) {
   const tableData = globalState.tables.find(t => t.tableId === tableId);
   if (!tableData) return;
 
+  if (tableData.headers.length <= 1) {
+    import('./toast.js').then(m => m.showToast('Minimal harus ada 1 kolom!', 'error'));
+    return;
+  }
+
   tableData.headers.splice(colIndex, 1);
   tableData.rows.forEach(row => row.splice(colIndex, 1));
 }
@@ -247,7 +252,13 @@ export function saveTableState(tableId, globalState) {
 
   // Extract dynamic headers from UI
   const headerContents = tableEl.querySelectorAll('thead th:not(.action-col) .header-content');
-  tableData.headers = Array.from(headerContents).map(div => div.textContent.trim());
+  const headers = Array.from(headerContents).map(div => div.textContent.trim());
+  tableData.headers = headers;
+
+  // Deteksi index kolom secara dinamis berdasarkan nama header
+  const qtyIdx = headers.findIndex(h => h.toUpperCase().includes('QTY') || h.toUpperCase().includes('JUMLAH'));
+  const priceIdx = headers.findIndex(h => h.toUpperCase().includes('HARGA'));
+  const subtotalIdx = headers.findIndex(h => h.toUpperCase().includes('SUB TOTAL') || h.toUpperCase().includes('TOTAL'));
 
   // Update rows
   const rows = tableEl.querySelectorAll('tbody tr');
@@ -260,12 +271,13 @@ export function saveTableState(tableId, globalState) {
     
     // 2. Bersihkan angka untuk kalkulasi
     const cleanNum = (str) => {
+      if (!str) return 0;
       const cleaned = str.replace(/[^0-9]/g, '');
       return parseInt(cleaned, 10) || 0;
     };
 
-    const qty = cleanNum(rawData[1] || '0');
-    const price = cleanNum(rawData[2] || '0');
+    const qty = qtyIdx !== -1 ? cleanNum(rawData[qtyIdx]) : 0;
+    const price = priceIdx !== -1 ? cleanNum(rawData[priceIdx]) : 0;
     const subtotal = qty * price;
 
     // 3. Update DOM dan Kembalikan data terformat
@@ -273,17 +285,17 @@ export function saveTableState(tableId, globalState) {
       let formattedVal = val;
       const td = cells[colIdx];
 
-      if (colIdx === 0 && val) {
+      if (colIdx === 0 && val && !val.includes(' ')) { // Asumsi kolom 0 adalah Nama/Kategori
         formattedVal = val.toUpperCase();
-      } else if (colIdx === 1) {
+      } else if (colIdx === qtyIdx) {
         formattedVal = toQty(qty.toString());
-      } else if (colIdx === 2) {
+      } else if (colIdx === priceIdx) {
         formattedVal = toRupiah(price.toString());
-      } else if (colIdx === 3) {
+      } else if (colIdx === subtotalIdx) {
         formattedVal = toRupiah(subtotal.toString());
       }
 
-      if (td.textContent !== formattedVal) {
+      if (td && td.textContent !== formattedVal) {
         td.textContent = formattedVal;
       }
       return formattedVal;
