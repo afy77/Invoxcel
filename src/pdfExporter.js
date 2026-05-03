@@ -4,7 +4,7 @@
  */
 import html2pdf from 'html2pdf.js';
 
-export function exportToPdf(tableId, sheetName) {
+export function exportToPdf(tableId, sheetName, meta = {}) {
   const containerEl = document.getElementById(`container_${tableId}`);
   if (!containerEl) return;
 
@@ -24,11 +24,25 @@ export function exportToPdf(tableId, sheetName) {
   
   const title = document.createElement('h2');
   title.style.fontFamily = 'sans-serif';
-  title.style.marginBottom = '15px';
+  title.style.marginBottom = '5px';
   const tableNum = tableId.replace('table_', '');
   title.textContent = `Tabel ${tableNum}: ${sheetName}`;
   
   wrapper.appendChild(title);
+
+  if (meta.customerName) {
+    const metaDiv = document.createElement('div');
+    metaDiv.style.fontFamily = 'sans-serif';
+    metaDiv.style.marginBottom = '15px';
+    metaDiv.style.fontSize = '12px';
+    metaDiv.innerHTML = `
+      <strong>Pelanggan:</strong> ${meta.customerName}<br>
+      ${meta.customerAddress ? `<strong>Alamat:</strong> ${meta.customerAddress}<br>` : ''}
+      ${meta.date ? `<strong>Tanggal:</strong> ${meta.date}` : ''}
+    `;
+    wrapper.appendChild(metaDiv);
+  }
+
   wrapper.appendChild(clone);
 
   const opt = {

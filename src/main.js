@@ -183,12 +183,12 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       onPrint: (tableId) => {
         saveTableState(tableId, globalState); // Auto-save edits
-        printTable(tableId);
+        printTable(tableId, globalState.globalInvoiceMeta);
       },
       onPdf: (tableId) => {
         saveTableState(tableId, globalState); // Auto-save edits
         const tableData = globalState.tables.find(t => t.tableId === tableId);
-        if (tableData) exportToPdf(tableId, tableData.sheetName);
+        if (tableData) exportToPdf(tableId, tableData.sheetName, globalState.globalInvoiceMeta);
       },
       onCreateInvoice: (tableId) => {
         saveTableState(tableId, globalState); // Auto-save edits before creating invoice
@@ -245,8 +245,10 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   // Load saved data if exists
-  if (loadFromLocalStorage() && globalState.tables.length > 0) {
-    updateGlobalMetaUI();
+  loadFromLocalStorage();
+  updateGlobalMetaUI();
+  
+  if (globalState.tables.length > 0) {
     renderAll();
   }
 
@@ -289,8 +291,24 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btnPrintAll')?.addEventListener('click', () => {
     if (globalState.tables.length === 0) return showToast('Tidak ada data tabel untuk dicetak.', 'error');
     
+    // Merge global metadata if available and local field is empty
+    const tablesToPrint = globalState.tables.map(table => {
+      const localMeta = table.invoiceMeta || {};
+      const mergedMeta = {
+        ...localMeta,
+        customerName: localMeta.customerName || globalState.globalInvoiceMeta.customerName,
+        customerAddress: localMeta.customerAddress || globalState.globalInvoiceMeta.customerAddress,
+        date: localMeta.date || globalState.globalInvoiceMeta.date,
+        dueDate: localMeta.dueDate || globalState.globalInvoiceMeta.dueDate
+      };
+      return {
+        ...table,
+        invoiceMeta: mergedMeta
+      };
+    });
+
     // Simpan semua tabel ke sessionStorage
-    sessionStorage.setItem('bulkInvoiceData', JSON.stringify(globalState.tables));
+    sessionStorage.setItem('bulkInvoiceData', JSON.stringify(tablesToPrint));
     window.location.href = '/bulk-print.html';
   });
 
@@ -351,6 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Render tabel
       toggleGlobalMetaVisibility();
+      updateGlobalMetaUI();
       renderAll();
       showToast('File Excel berhasil diproses!');
     } catch (error) {

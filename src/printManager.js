@@ -3,7 +3,7 @@
  * Bertanggung jawab untuk mencetak tabel tertentu.
  */
 
-export function printTable(tableId) {
+export function printTable(tableId, meta = {}) {
   const cardEl = document.getElementById(`card_${tableId}`);
   if (!cardEl) return;
 
@@ -18,6 +18,14 @@ export function printTable(tableId) {
   // Ambil HTML dari tabel
   const tableHtml = cardEl.querySelector('.overflow-x-auto').innerHTML;
   const titleHtml = cardEl.querySelector('h3').outerHTML;
+
+  const customerHtml = meta.customerName ? `
+    <div style="margin-bottom: 20px; font-size: 14px;">
+      <strong>Pelanggan:</strong> ${meta.customerName}<br>
+      ${meta.customerAddress ? `<strong>Alamat:</strong> ${meta.customerAddress}<br>` : ''}
+      ${meta.date ? `<strong>Tanggal:</strong> ${meta.date}` : ''}
+    </div>
+  ` : '';
 
   // Tulis ke iframe
   printDocument.open();
@@ -38,6 +46,7 @@ export function printTable(tableId) {
       </head>
       <body>
         ${titleHtml}
+        ${customerHtml}
         ${tableHtml}
       </body>
     </html>

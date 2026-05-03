@@ -53,7 +53,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('btnPrint').addEventListener('click', () => {
-      window.print();
+      // Sinkronkan nilai input/textarea ke dalam spesifikasi atribut DOM
+      const inputs = document.querySelectorAll('input, textarea');
+      inputs.forEach(input => {
+        if (input.tagName === 'TEXTAREA') {
+          input.textContent = input.value;
+        } else {
+          input.setAttribute('value', input.value);
+        }
+      });
+
+      // Beri sedikit jeda agar DOM terupdate
+      setTimeout(() => {
+        window.print();
+      }, 100);
     });
 
     document.getElementById('btnPdf')?.addEventListener('click', async (e) => {
