@@ -80,30 +80,31 @@ export function renderInvoice(tableData, containerId) {
   let padding = '6px 10px';
   let sectionGap = 'gap-6'; // Gap antar bagian bawah
   let sectionMb = 'mb-6';
-  let containerPadding = 'p-4';
+  let containerPadding = 'p-10';
   
   if (rowCount > 12 && rowCount <= 18) {
     fontSize = '10px';
     padding = '4px 8px';
     sectionMb = 'mb-4';
-    containerPadding = 'p-6';
+    containerPadding = 'p-4';
   } else if (rowCount > 18 && rowCount <= 22) {
     fontSize = '9px';
     padding = '2px 6px';
     sectionMb = 'mb-3';
-    containerPadding = 'px-6 py-4';
-  } else if (rowCount > 22 && rowCount <= 26) {
-    fontSize = '8px';
-    padding = '1px 5px';
     sectionGap = 'gap-4';
+    containerPadding = 'p-3';
+  } else if (rowCount > 22 && rowCount <= 26) {
+    fontSize = '8.2px';
+    padding = '1px 5px';
+    sectionGap = 'gap-2';
     sectionMb = 'mb-2';
-    containerPadding = 'px-4 py-3';
+    containerPadding = 'p-2';
   } else if (rowCount > 26) {
     fontSize = '7.5px';
-    padding = '1px 3px';
-    sectionGap = 'gap-2';
+    padding = '0.5px 3px';
+    sectionGap = 'gap-1';
     sectionMb = 'mb-1';
-    containerPadding = 'px-3 py-2';
+    containerPadding = 'p-1';
   }
 
   // Hitung otomatis subtotal dari kolom "Jumlah" (index 3)
@@ -151,8 +152,23 @@ export function renderInvoice(tableData, containerId) {
     });
   }
 
+  // Logika Margin Dinamis
+  const marginTop = s.marginTop || '12';
+  const marginBottom = s.marginBottom || '12';
+  const marginLeft = s.marginLeft || '12';
+  const marginRight = s.marginRight || '12';
+
+  // Suntikkan style @page dinamis untuk print (margin 0 untuk hapus header/footer bawaan browser)
+  let styleTag = document.getElementById('dynamic-print-styles');
+  if (!styleTag) {
+    styleTag = document.createElement('style');
+    styleTag.id = 'dynamic-print-styles';
+    document.head.appendChild(styleTag);
+  }
+  styleTag.innerHTML = `@page { margin: 0 !important; }`;
+
   container.innerHTML = `
-    <div class="max-w-4xl print:max-w-none w-full mx-auto ${containerPadding} bg-white invoice-template-${templateName}" style="font-family: ${fontFamily}; color: ${cellFontColor};">
+    <div class="max-w-4xl print:max-w-none w-full mx-auto ${containerPadding} bg-white invoice-template-${templateName}" style="font-family: ${fontFamily}; color: ${cellFontColor}; padding-top: ${marginTop}mm; padding-bottom: ${marginBottom}mm; padding-left: ${marginLeft}mm; padding-right: ${marginRight}mm;">
       <!-- HEADER AREA (Logo) -->
       <div class="flex flex-col items-center justify-center border-b-4 border-double border-gray-800 pt-8 pb-3 ${sectionMb} relative">
         <div class="w-full flex justify-center relative group">

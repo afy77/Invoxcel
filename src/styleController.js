@@ -122,6 +122,28 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
           </div>
         </div>
 
+        <div class="pt-4 border-t border-slate-200/60 dark:border-slate-700/60">
+           <label class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-3">Margin Invoice (mm)</label>
+           <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+              <div>
+                <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1">Atas</label>
+                <input type="number" id="style_marginTop" value="${currentStyles.marginTop || '10'}" class="w-full h-8 text-xs border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-2 outline-none focus:border-indigo-400" min="0" max="50">
+              </div>
+              <div>
+                <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1">Bawah</label>
+                <input type="number" id="style_marginBottom" value="${currentStyles.marginBottom || '10'}" class="w-full h-8 text-xs border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-2 outline-none focus:border-indigo-400" min="0" max="50">
+              </div>
+              <div>
+                <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1">Kiri</label>
+                <input type="number" id="style_marginLeft" value="${currentStyles.marginLeft || '12'}" class="w-full h-8 text-xs border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-2 outline-none focus:border-indigo-400" min="0" max="50">
+              </div>
+              <div>
+                <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1">Kanan</label>
+                <input type="number" id="style_marginRight" value="${currentStyles.marginRight || '12'}" class="w-full h-8 text-xs border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-2 outline-none focus:border-indigo-400" min="0" max="50">
+              </div>
+           </div>
+        </div>
+
         </div>
 
         <div class="mt-6 border-t border-slate-200/60 dark:border-slate-700/60 pt-4">
@@ -168,6 +190,10 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
       fontFamily: document.getElementById('style_fontFamily').value,
       headerAlign: document.getElementById('style_headerAlign').value,
       bodyAlign: document.getElementById('style_bodyAlign').value,
+      marginTop: document.getElementById('style_marginTop').value,
+      marginBottom: document.getElementById('style_marginBottom').value,
+      marginLeft: document.getElementById('style_marginLeft').value,
+      marginRight: document.getElementById('style_marginRight').value,
       columnAligns: Array.from(document.querySelectorAll('.column-align-row')).map(row => ({
         header: row.querySelector('.th-align').value,
         body: row.querySelector('.td-align').value

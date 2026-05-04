@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (imageControls) imageControls.classList.add('hidden');
 
         const opt = {
-          margin:       [0, 0, 0, 0],
+          margin:       [12, 12, 12, 12],
           filename:     `Invoice_${generateInvoiceNumber()}.pdf`,
           image:        { type: 'jpeg', quality: 0.98 },
           html2canvas:  { 
