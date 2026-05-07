@@ -206,18 +206,23 @@ export function renderInvoice(tableData, containerId) {
       <!-- INFO SECTION -->
       <div class="flex flex-row justify-between ${sectionMb} gap-4 text-xs font-medium uppercase tracking-wider">
         <div class="w-1/2">
-          <h3 class="text-[10px] font-bold text-black mb-1">PELANGGAN</h3>
+          <h3 class="text-sm font-bold text-black mb-1">PELANGGAN</h3>
           <div class="flex flex-col gap-y-1">
-            <textarea class="invoice-field inv_customerName text-sm font-bold text-gray-900 border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400 leading-tight py-0" rows="1" placeholder="Nama Pelanggan">${meta.customerName || ''}</textarea>
-            <textarea class="invoice-field inv_customerAddress text-black border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400 text-xs leading-tight py-0" rows="1" placeholder="Alamat & Kontak">${meta.customerAddress || ''}</textarea>
+            <textarea class="invoice-field inv_customerName text-sm font-bold text-gray-900 border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400 leading-tight py-0.5" rows="1" placeholder="Nama Pelanggan">${meta.customerName || ''}</textarea>
+            <textarea class="invoice-field inv_customerAddress text-sm font-bold text-gray-900 border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400 leading-tight py-0.5" rows="1" placeholder="Alamat & Kontak">${meta.customerAddress || ''}</textarea>
           </div>
         </div> 
-        <div class="w-1/3">
-          <div class="grid grid-cols-2 gap-x-2 gap-y-1 mt-5">
-            <div class="text-black font-bold">Tanggal:</div>
-            <div><input type="date" onclick="this.showPicker()" class="invoice-field inv_date border-none outline-none bg-transparent text-gray-900 font-bold w-full px-1 py-0.5 text-sm cursor-pointer hover:bg-gray-50 rounded transition-colors" value="${meta.date || today}"></div>
-            <div class="text-black font-bold">Jatuh Tempo:</div>
-            <div><input type="date" onclick="this.showPicker()" class="invoice-field inv_dueDate border-none outline-none bg-transparent text-gray-900 font-bold w-full px-1 py-0.5 text-sm cursor-pointer hover:bg-gray-50 rounded transition-colors" value="${meta.dueDate || nextWeek}"></div>
+        <div class="w-[40%]">
+          <h3 class="text-sm font-bold text-transparent mb-1 select-none">&nbsp;</h3>
+          <div class="flex flex-col gap-y-1 text-sm">
+            <div class="flex flex-row items-center h-6">
+              <span class="text-black font-bold w-32 shrink-0">Tanggal:</span>
+              <div class="flex-1 h-6 flex items-center"><input type="date" onclick="this.showPicker()" class="invoice-field inv_date border-none outline-none bg-transparent text-gray-900 font-bold w-full px-1 py-0 text-sm cursor-pointer hover:bg-gray-50 rounded transition-colors" value="${meta.date || today}"></div>
+            </div>
+            <div class="flex flex-row items-center h-6">
+              <span class="text-black font-bold w-32 shrink-0">Jatuh Tempo:</span>
+              <div class="flex-1 h-6 flex items-center"><input type="date" onclick="this.showPicker()" class="invoice-field inv_dueDate border-none outline-none bg-transparent text-gray-900 font-bold w-full px-1 py-0 text-sm cursor-pointer hover:bg-gray-50 rounded transition-colors" value="${meta.dueDate || nextWeek}"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -322,18 +327,18 @@ export function renderInvoice(tableData, containerId) {
         <!-- TOTALS (Vertical Layout) -->
         <div class="flex justify-end pr-2 md:pr-4">
           <div class="w-72 md:w-80 space-y-1">
-            <div class="flex justify-between items-center py-1 border-b border-gray-100  px-2">
-              <span class="text-black text-[10px] uppercase font-bold">SUB TOTAL</span>
-              <div class="flex items-center font-bold text-gray-800 text-xs">
+            <div class="flex justify-between items-center py-1 border-b border-gray-100 px-2">
+              <span class="text-base font-bold text-gray-800 uppercase tracking-tight">SUB TOTAL</span>
+              <div class="flex items-center font-black text-black text-base">
                 <span class="mr-1">Rp</span>
-                <input type="text" class="invoice-field inv_subtotal total-input border-none outline-none bg-transparent text-right w-40 font-bold pr-2 py-1 not-italic" placeholder="0" value="${meta.subtotal || toRupiahStatic(calculatedSubtotal)}">
+                <input type="text" class="invoice-field inv_subtotal total-input border-none outline-none bg-transparent text-right w-40 font-black pr-2 py-1 not-italic" placeholder="0" value="${meta.subtotal || toRupiahStatic(calculatedSubtotal)}">
               </div>
             </div>
-            <div class="flex justify-between items-center py-1 border-b border-gray-100  px-2">
-              <span class="text-black text-[10px] uppercase font-bold">PPN</span>
-              <div class="flex items-center font-bold text-gray-800 text-xs">
+            <div class="flex justify-between items-center py-1 border-b border-gray-100 px-2">
+              <span class="text-base font-bold text-gray-800 uppercase tracking-tight">PPN</span>
+              <div class="flex items-center font-black text-black text-base">
                 <span class="mr-1 ppn-prefix ${(!meta.ppn || meta.ppn === '0') ? 'hidden' : ''}">Rp</span>
-                <input type="text" class="invoice-field inv_ppn total-input border-none outline-none bg-transparent text-right w-40 font-bold pr-2 py-1 not-italic" placeholder=" " value="${(meta.ppn && meta.ppn !== '0') ? meta.ppn : ''}">
+                <input type="text" class="invoice-field inv_ppn total-input border-none outline-none bg-transparent text-right w-40 font-black pr-2 py-1 not-italic" placeholder=" " value="${(meta.ppn && meta.ppn !== '0') ? meta.ppn : ''}">
               </div>
             </div>
             <div class="flex justify-between items-center py-2 bg-gray-50 px-2 rounded mt-2 shadow-sm" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">

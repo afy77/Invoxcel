@@ -8,7 +8,7 @@ import { initStyleController } from './styleController.js';
 import { printTable } from './printManager.js';
 import { exportToPdf } from './pdfExporter.js';
 import { initDarkMode } from './darkMode.js';
-import { showToast } from './toast.js';
+import { showToast, showConfirm } from './toast.js';
 import { renderInvoice } from './invoiceRenderer.js';
 
 // Init Dark Mode on load
@@ -152,18 +152,32 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cardEl) cardEl.querySelector('.btn-save-changes')?.classList.replace('hidden', 'flex');
       },
       onDeleteRow: (tableId, rowEl) => {
-        rowEl.remove();
-        saveTableState(tableId, globalState); // Save draft
-        const cardEl = document.getElementById(`card_${tableId}`);
-        if (cardEl) cardEl.querySelector('.btn-save-changes')?.classList.replace('hidden', 'flex');
+        showConfirm('Apakah Anda yakin ingin menghapus baris ini?', () => {
+          const tableData = globalState.tables.find(t => t.tableId === tableId);
+          if (tableData) {
+            const rowIndex = parseInt(rowEl.dataset.rowIndex);
+            if (!isNaN(rowIndex)) {
+              tableData.rows.splice(rowIndex, 1);
+              saveToLocalStorage();
+              renderAll();
+              // Re-enter edit mode
+              editStates[tableId] = false;
+              toggleEditMode(tableId, globalState);
+              showToast('Baris berhasil dihapus');
+            }
+          }
+        });
       },
       onDeleteColumn: (tableId, colIndex) => {
-        deleteColumn(tableId, colIndex, globalState);
-        renderAll();
-        editStates[tableId] = false;
-        toggleEditMode(tableId, globalState);
-        const cardEl = document.getElementById(`card_${tableId}`);
-        if (cardEl) cardEl.querySelector('.btn-save-changes')?.classList.replace('hidden', 'flex');
+        showConfirm('Apakah Anda yakin ingin menghapus kolom ini? Seluruh data di kolom ini akan hilang.', () => {
+          deleteColumn(tableId, colIndex, globalState);
+          renderAll();
+          editStates[tableId] = false;
+          toggleEditMode(tableId, globalState);
+          const cardEl = document.getElementById(`card_${tableId}`);
+          if (cardEl) cardEl.querySelector('.btn-save-changes')?.classList.replace('hidden', 'flex');
+          showToast('Kolom berhasil dihapus');
+        });
       },
       onAddColumn: (tableId) => {
         addColumn(tableId, globalState);
@@ -240,6 +254,8 @@ document.addEventListener('DOMContentLoaded', () => {
         globalState.tables = globalState.tables.filter(t => t.tableId !== tableId);
         saveToLocalStorage();
         renderAll();
+        toggleGlobalMetaVisibility();
+        showToast('Tabel berhasil dihapus');
       }
     });
   };
