@@ -328,17 +328,17 @@ export function renderInvoice(tableData, containerId) {
         <div class="flex justify-end pr-2 md:pr-4">
           <div class="w-72 md:w-80 space-y-1">
             <div class="flex justify-between items-center py-1 border-b border-gray-100 px-2">
-              <span class="text-base font-bold text-gray-800 uppercase tracking-tight">SUB TOTAL</span>
-              <div class="flex items-center font-black text-black text-base">
+              <span class="text-[10px] font-bold text-gray-800 uppercase tracking-tight">SUB TOTAL</span>
+              <div class="flex items-center font-bold text-gray-800 text-xs">
                 <span class="mr-1">Rp</span>
-                <input type="text" class="invoice-field inv_subtotal total-input border-none outline-none bg-transparent text-right w-40 font-black pr-2 py-1 not-italic" placeholder="0" value="${meta.subtotal || toRupiahStatic(calculatedSubtotal)}">
+                <input type="text" class="invoice-field inv_subtotal total-input border-none outline-none bg-transparent text-right w-40 font-bold pr-2 py-1 not-italic" placeholder="0" value="${meta.subtotal || toRupiahStatic(calculatedSubtotal)}">
               </div>
             </div>
             <div class="flex justify-between items-center py-1 border-b border-gray-100 px-2">
-              <span class="text-base font-bold text-gray-800 uppercase tracking-tight">PPN</span>
-              <div class="flex items-center font-black text-black text-base">
+              <span class="text-[10px] font-bold text-gray-800 uppercase tracking-tight">PPN</span>
+              <div class="flex items-center font-bold text-gray-800 text-xs">
                 <span class="mr-1 ppn-prefix ${(!meta.ppn || meta.ppn === '0') ? 'hidden' : ''}">Rp</span>
-                <input type="text" class="invoice-field inv_ppn total-input border-none outline-none bg-transparent text-right w-40 font-black pr-2 py-1 not-italic" placeholder=" " value="${(meta.ppn && meta.ppn !== '0') ? meta.ppn : ''}">
+                <input type="text" class="invoice-field inv_ppn total-input border-none outline-none bg-transparent text-right w-40 font-bold pr-2 py-1 not-italic" placeholder=" " value="${(meta.ppn && meta.ppn !== '0') ? meta.ppn : ''}">
               </div>
             </div>
             <div class="flex justify-between items-center py-2 bg-gray-50 px-2 rounded mt-2 shadow-sm" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;">
