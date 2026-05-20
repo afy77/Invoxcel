@@ -7,3 +7,6 @@ coverage/
 .env*
 !.env.example
 Panduan_Penggunaan.md
+akumulasipembayaran.md
+akumulasi_pembayaran.html
+testing 2.xlsx

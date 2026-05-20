@@ -53,6 +53,7 @@ export function exportToPdf(tableId, sheetName, meta = {}) {
     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
   };
 
-  // Generate PDF
-  html2pdf().set(opt).from(wrapper).save();
+  // [H-1] Kembalikan Promise dari html2pdf agar caller bisa await sampai PDF benar-benar selesai.
+  // Tanpa return, pemanggil tidak bisa mengetahui kapan proses PDF selesai.
+  return html2pdf().set(opt).from(wrapper).save();
 }

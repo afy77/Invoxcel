@@ -53,13 +53,17 @@ export function printTable(tableId, meta = {}) {
   `);
   printDocument.close();
 
+  // [H-4] Gunakan event 'afterprint' agar iframe dihapus tepat setelah print selesai,
+  // bukan setelah timeout 1 detik yang bisa terlalu cepat jika user cancel dialog.
+  printFrame.contentWindow.addEventListener('afterprint', () => {
+    if (document.body.contains(printFrame)) {
+      document.body.removeChild(printFrame);
+    }
+  });
+
   // Tunggu render selesai lalu print
   setTimeout(() => {
     printFrame.contentWindow.focus();
     printFrame.contentWindow.print();
-    // Hapus iframe setelah print
-    setTimeout(() => {
-      document.body.removeChild(printFrame);
-    }, 1000);
   }, 250);
 }

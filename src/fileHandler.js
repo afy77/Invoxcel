@@ -20,6 +20,9 @@ export function initFileHandler(dropZoneId, fileInputId, onFileReady) {
   fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) handleFile(file, onFileReady);
+    // [H-2] Reset value agar event 'change' tetap terpicu jika user memilih file yang sama lagi.
+    // Tanpa ini, browser tidak akan fire event jika nama file identik dengan sebelumnya.
+    e.target.value = '';
   });
 
   // Handle Drag & Drop

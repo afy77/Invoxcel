@@ -16,6 +16,10 @@ export function renderTables(tables, containerId, actions) {
     return;
   }
 
+  // [C-3] FIX: State drag disimpan di closure, bukan di window.
+  // Menghindari global namespace pollution dan konflik antar tab browser.
+  let _draggedRow = null;
+
   tables.forEach((table, index) => {
     const card = document.createElement('div');
     card.className = 'bg-white dark:bg-slate-800 rounded-3xl shadow-xl shadow-indigo-100/40 dark:shadow-none border border-slate-200 dark:border-slate-700 overflow-hidden mb-8 transition-all hover:shadow-2xl hover:shadow-indigo-100/50 dark:hover:border-slate-600';
@@ -126,11 +130,11 @@ export function renderTables(tables, containerId, actions) {
       tr.addEventListener('dragstart', (e) => {
         tr.classList.add('opacity-40', 'bg-indigo-50/50', 'dark:bg-indigo-900/30', 'scale-[0.99]');
         e.dataTransfer.effectAllowed = 'move';
-        window._draggedRow = tr;
+        _draggedRow = tr; // closure-scoped, bukan window
       });
       tr.addEventListener('dragend', () => {
         tr.classList.remove('opacity-40', 'bg-indigo-50/50', 'dark:bg-indigo-900/30', 'scale-[0.99]');
-        window._draggedRow = null;
+        _draggedRow = null; // reset closure
       });
       tr.addEventListener('dragover', (e) => {
         e.preventDefault();
@@ -151,7 +155,7 @@ export function renderTables(tables, containerId, actions) {
       tr.addEventListener('drop', (e) => {
         e.preventDefault();
         tr.classList.remove('border-b-4', 'border-t-4', 'border-indigo-400');
-        const draggedRow = window._draggedRow;
+        const draggedRow = _draggedRow; // baca dari closure
         if (draggedRow && draggedRow !== tr) {
           const bounding = tr.getBoundingClientRect();
           const offset = bounding.y + (bounding.height / 2);

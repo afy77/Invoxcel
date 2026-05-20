@@ -9,7 +9,12 @@ import { printTable } from './printManager.js';
 import { exportToPdf } from './pdfExporter.js';
 import { initDarkMode } from './darkMode.js';
 import { showToast, showConfirm } from './toast.js';
-import { renderInvoice } from './invoiceRenderer.js';
+// renderInvoice hanya digunakan di invoice.html, bukan di main.js
+import { showLoadingModal, hideLoadingModal } from './loadingModal.js';
+
+// Expose showToast ke window agar bisa diakses di saveToLocalStorage
+// tanpa risiko circular import (saveToLocalStorage dipanggil sebelum DOMContentLoaded)
+window.__invoxcelToast = { showToast };
 
 // Init Dark Mode on load
 initDarkMode();
@@ -30,9 +35,25 @@ const timestampKey = 'invoxcel_timestamp';
 const EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 jam dalam milidetik
 
 function saveToLocalStorage() {
-  localStorage.setItem(storageKey, JSON.stringify(globalState.tables));
-  localStorage.setItem(timestampKey, Date.now().toString());
-  localStorage.setItem('invoxcel_global_meta', JSON.stringify(globalState.globalInvoiceMeta));
+  // [C-2] Wrap dengan try/catch — localStorage.setItem() bisa throw QuotaExceededError
+  // jika storage browser penuh (batas default ~5MB).
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(globalState.tables));
+    localStorage.setItem(timestampKey, Date.now().toString());
+    localStorage.setItem('invoxcel_global_meta', JSON.stringify(globalState.globalInvoiceMeta));
+  } catch (e) {
+    if (e.name === 'QuotaExceededError' || e.code === 22) {
+      // Tampilkan peringatan — import toast tidak bisa langsung di sini (circular risk)
+      // Gunakan console + alert sebagai fallback aman
+      console.error('[saveToLocalStorage] Storage penuh:', e);
+      const { showToast } = window.__invoxcelToast || {};
+      if (typeof showToast === 'function') {
+        showToast('Penyimpanan lokal penuh. Beberapa data mungkin tidak tersimpan.', 'error');
+      }
+    } else {
+      console.error('[saveToLocalStorage] Gagal menyimpan:', e);
+    }
+  }
 }
 
 function loadFromLocalStorage() {
@@ -126,11 +147,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       },
       onSave: (tableId) => {
-        saveTableState(tableId, globalState); // Sync contenteditable to globalState
-        saveToLocalStorage(); // Commit
-        if (globalState.tableBackups) delete globalState.tableBackups[tableId];
-        editStates[tableId] = false;
-        renderAll(); // Rebuild final UI
+        showLoadingModal('save');
+        try {
+          saveTableState(tableId, globalState); // Sync contenteditable to globalState
+          saveToLocalStorage(); // Commit
+          if (globalState.tableBackups) delete globalState.tableBackups[tableId];
+          editStates[tableId] = false;
+          renderAll(); // Rebuild final UI
+        } catch (err) {
+          console.error('[onSave] Gagal menyimpan:', err);
+          showToast('Gagal menyimpan perubahan.', 'error');
+        } finally {
+          hideLoadingModal();
+        }
       },
       onTableChanged: (tableId) => {
         const cardEl = document.getElementById(`card_${tableId}`);
@@ -199,55 +228,90 @@ document.addEventListener('DOMContentLoaded', () => {
         saveTableState(tableId, globalState); // Auto-save edits
         printTable(tableId, globalState.globalInvoiceMeta);
       },
-      onPdf: (tableId) => {
-        saveTableState(tableId, globalState); // Auto-save edits
-        const tableData = globalState.tables.find(t => t.tableId === tableId);
-        if (tableData) exportToPdf(tableId, tableData.sheetName, globalState.globalInvoiceMeta);
+      onPdf: async (tableId) => {
+        // [H-1] exportToPdf sekarang mengembalikan Promise, sehingga bisa di-await
+        // Loading modal tertutup SETELAH PDF benar-benar selesai diproses.
+        showLoadingModal('invoice');
+        try {
+          saveTableState(tableId, globalState); // Auto-save edits
+          const tableData = globalState.tables.find(t => t.tableId === tableId);
+          if (tableData) await exportToPdf(tableId, tableData.sheetName, globalState.globalInvoiceMeta);
+        } catch (err) {
+          console.error('[onPdf] Gagal mengekspor PDF:', err);
+          showToast('Gagal mengekspor PDF.', 'error');
+        } finally {
+          hideLoadingModal(); // Tidak perlu setTimeout — await sudah memastikan PDF selesai
+        }
       },
       onCreateInvoice: (tableId) => {
-        saveTableState(tableId, globalState); // Auto-save edits before creating invoice
-        const tableData = globalState.tables.find(t => t.tableId === tableId);
-        if (tableData) {
-          // Merge global metadata if available and local field is empty
-          const localMeta = tableData.invoiceMeta || {};
-          const mergedMeta = {
-            ...localMeta,
-            customerName: localMeta.customerName || globalState.globalInvoiceMeta.customerName,
-            customerAddress: localMeta.customerAddress || globalState.globalInvoiceMeta.customerAddress,
-            date: localMeta.date || globalState.globalInvoiceMeta.date,
-            dueDate: localMeta.dueDate || globalState.globalInvoiceMeta.dueDate
-          };
+        showLoadingModal('invoice');
+        try {
+          saveTableState(tableId, globalState); // Auto-save edits before creating invoice
+          const tableData = globalState.tables.find(t => t.tableId === tableId);
+          if (tableData) {
+            // Merge global metadata if available and local field is empty
+            const localMeta = tableData.invoiceMeta || {};
+            const mergedMeta = {
+              ...localMeta,
+              customerName: localMeta.customerName || globalState.globalInvoiceMeta.customerName,
+              customerAddress: localMeta.customerAddress || globalState.globalInvoiceMeta.customerAddress,
+              date: localMeta.date || globalState.globalInvoiceMeta.date,
+              dueDate: localMeta.dueDate || globalState.globalInvoiceMeta.dueDate
+            };
 
-          const finalTableData = {
-            ...tableData,
-            invoiceMeta: mergedMeta
-          };
+            const finalTableData = {
+              ...tableData,
+              invoiceMeta: mergedMeta
+            };
 
-          sessionStorage.setItem('invoiceData', JSON.stringify(finalTableData));
-          window.location.href = '/invoice.html';
+            sessionStorage.setItem('invoiceData', JSON.stringify(finalTableData));
+            // [C-1] FIX: Tidak memanggil hideLoadingModal() di sini.
+            // Modal akan hilang otomatis saat halaman unload karena navigasi.
+            // Timeout 1600ms (sedikit di atas MIN_DISPLAY_MS=1500ms) memastikan
+            // spinner tampil cukup lama sebelum halaman berpindah.
+            setTimeout(() => { window.location.href = '/invoice.html'; }, 1600);
+          } else {
+            hideLoadingModal(); // Tidak ada data — tutup modal
+          }
+        } catch (err) {
+          // Saat error: modal HARUS ditutup agar user bisa berinteraksi lagi
+          console.error('[onCreateInvoice] Gagal membuat invoice:', err);
+          showToast('Gagal membuat invoice.', 'error');
+          hideLoadingModal();
         }
       },
       onCreateRowInvoice: (tableId, rowIndex) => {
-        saveTableState(tableId, globalState); // Auto-save edits before creating invoice
-        const tableData = globalState.tables.find(t => t.tableId === tableId);
-        if (tableData && tableData.rows[rowIndex]) {
-          // Merge global metadata
-          const localMeta = tableData.invoiceMeta || {};
-          const mergedMeta = {
-            ...localMeta,
-            customerName: localMeta.customerName || globalState.globalInvoiceMeta.customerName,
-            customerAddress: localMeta.customerAddress || globalState.globalInvoiceMeta.customerAddress,
-            date: localMeta.date || globalState.globalInvoiceMeta.date,
-            dueDate: localMeta.dueDate || globalState.globalInvoiceMeta.dueDate
-          };
+        showLoadingModal('invoice');
+        try {
+          saveTableState(tableId, globalState); // Auto-save edits before creating invoice
+          const tableData = globalState.tables.find(t => t.tableId === tableId);
+          if (tableData && tableData.rows[rowIndex]) {
+            // Merge global metadata
+            const localMeta = tableData.invoiceMeta || {};
+            const mergedMeta = {
+              ...localMeta,
+              customerName: localMeta.customerName || globalState.globalInvoiceMeta.customerName,
+              customerAddress: localMeta.customerAddress || globalState.globalInvoiceMeta.customerAddress,
+              date: localMeta.date || globalState.globalInvoiceMeta.date,
+              dueDate: localMeta.dueDate || globalState.globalInvoiceMeta.dueDate
+            };
 
-          const singleRowData = {
-            ...tableData,
-            rows: [tableData.rows[rowIndex]],
-            invoiceMeta: mergedMeta 
-          };
-          sessionStorage.setItem('invoiceData', JSON.stringify(singleRowData));
-          window.location.href = '/invoice.html';
+            const singleRowData = {
+              ...tableData,
+              rows: [tableData.rows[rowIndex]],
+              invoiceMeta: mergedMeta
+            };
+            sessionStorage.setItem('invoiceData', JSON.stringify(singleRowData));
+            // [C-1] FIX: Modal tidak di-hide manual saat sukses — navigasi menghapus halaman.
+            // Timeout 1600ms > MIN_DISPLAY_MS (1500ms) agar spinner sempat terlihat.
+            setTimeout(() => { window.location.href = '/invoice.html'; }, 1600);
+          } else {
+            hideLoadingModal(); // Tidak ada data baris — tutup modal
+          }
+        } catch (err) {
+          console.error('[onCreateRowInvoice] Gagal membuat invoice:', err);
+          showToast('Gagal membuat invoice.', 'error');
+          hideLoadingModal();
         }
       },
       onDeleteTable: (tableId) => {
@@ -330,8 +394,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Inisialisasi File Handler
   initFileHandler('dropZone', 'fileInput', async (file) => {
+    // ── Konteks: Import File ──────────────────────────────────────────────────
+    showLoadingModal('import');
     try {
-      showLoading(true);
       // Parse file Excel
       let newTables = await parseExcelFile(file);
 
@@ -389,20 +454,15 @@ document.addEventListener('DOMContentLoaded', () => {
       renderAll();
       showToast('File Excel berhasil diproses!');
     } catch (error) {
-      console.error(error);
+      console.error('[Import] Terjadi kesalahan:', error);
       showToast('Terjadi kesalahan saat memproses file Excel.', 'error');
     } finally {
-      showLoading(false);
+      // Selalu tutup modal, bahkan jika terjadi error
+      hideLoadingModal();
     }
   });
 
 
 });
 
-function showLoading(isLoading) {
-  const loader = document.getElementById('loadingIndicator');
-  if (loader) {
-    if (isLoading) loader.classList.remove('hidden');
-    else loader.classList.add('hidden');
-  }
-}
+// [L-2] showLoading() lama telah dihapus — sudah digantikan sepenuhnya oleh loadingModal.js
