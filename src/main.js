@@ -95,12 +95,25 @@ function loadFromLocalStorage() {
       parsedTables.forEach(table => {
         if (table.headers) {
           if (table.headers[1] && table.headers[1].toUpperCase() === 'QTY') table.headers[1] = 'JUMLAH';
-          if (table.headers[2] && table.headers[2].toUpperCase() === 'HARGA') table.headers[2] = 'HARGA SATUAN';
-          if (table.headers[3] && table.headers[3].toUpperCase() === 'JUMLAH') table.headers[3] = 'SUB TOTAL';
+          
+          if (!table.headers.includes('SATUAN') && table.headers[1] === 'JUMLAH') {
+             table.headers.splice(2, 0, 'SATUAN');
+             if (table.rows) {
+               table.rows.forEach(row => row.splice(2, 0, ''));
+             }
+          }
+          
+          const hargaIdx = table.headers.findIndex(h => h.toUpperCase() === 'HARGA' || h.toUpperCase() === 'HARGA SATUAN');
+          if (hargaIdx !== -1) table.headers[hargaIdx] = 'HARGA SATUAN';
+          
+          const subIdx = table.headers.findIndex(h => h.toUpperCase() === 'SUB TOTAL' || (h.toUpperCase() === 'JUMLAH' && h !== table.headers[1]));
+          if (subIdx !== -1) table.headers[subIdx] = 'SUB TOTAL';
         }
         if (table.rows) {
           table.rows.forEach(row => {
-            if (row[0] && typeof row[0] === 'string') row[0] = row[0].toUpperCase();
+            if (row[0] && typeof row[0] === 'string') {
+              row[0] = row[0].toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+            }
             if (row[1] !== undefined) row[1] = formatQty(row[1]);
           });
         }
@@ -143,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
             delete globalState.tableBackups[tableId];
           }
           editStates[tableId] = false;
-          renderAll(); // Re-render to clear unsaved visual changes
+          updateDOM(); // Re-render to clear unsaved visual changes
         }
       },
       onSave: (tableId) => {
@@ -153,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
           saveToLocalStorage(); // Commit
           if (globalState.tableBackups) delete globalState.tableBackups[tableId];
           editStates[tableId] = false;
-          renderAll(); // Rebuild final UI
+          updateDOM(); // Rebuild final UI
         } catch (err) {
           console.error('[onSave] Gagal menyimpan:', err);
           showToast('Gagal menyimpan perubahan.', 'error');
@@ -174,55 +187,46 @@ document.addEventListener('DOMContentLoaded', () => {
       onAddRow: (tableId, position = 'bottom') => {
         addRow(tableId, globalState, position);
         saveTableState(tableId, globalState); // Save draft
-        renderAll();
-        editStates[tableId] = false;
-        toggleEditMode(tableId, globalState);
-        const cardEl = document.getElementById(`card_${tableId}`);
-        if (cardEl) cardEl.querySelector('.btn-save-changes')?.classList.replace('hidden', 'flex');
+        updateDOM(tableId);
       },
       onDeleteRow: (tableId, rowEl) => {
         showConfirm('Apakah Anda yakin ingin menghapus baris ini?', () => {
-          const tableData = globalState.tables.find(t => t.tableId === tableId);
-          if (tableData) {
-            const rowIndex = parseInt(rowEl.dataset.rowIndex);
-            if (!isNaN(rowIndex)) {
-              tableData.rows.splice(rowIndex, 1);
-              saveToLocalStorage();
-              renderAll();
-              // Re-enter edit mode
-              editStates[tableId] = false;
-              toggleEditMode(tableId, globalState);
-              showToast('Baris berhasil dihapus');
-            }
-          }
+          rowEl.remove();
+          updateDOM();
+          showToast('Baris berhasil dihapus');
         });
       },
       onDeleteColumn: (tableId, colIndex) => {
         showConfirm('Apakah Anda yakin ingin menghapus kolom ini? Seluruh data di kolom ini akan hilang.', () => {
           deleteColumn(tableId, colIndex, globalState);
-          renderAll();
-          editStates[tableId] = false;
-          toggleEditMode(tableId, globalState);
-          const cardEl = document.getElementById(`card_${tableId}`);
-          if (cardEl) cardEl.querySelector('.btn-save-changes')?.classList.replace('hidden', 'flex');
+          updateDOM(tableId);
           showToast('Kolom berhasil dihapus');
         });
       },
       onAddColumn: (tableId) => {
         addColumn(tableId, globalState);
-        renderAll();
-        editStates[tableId] = false;
-        toggleEditMode(tableId, globalState);
-        const cardEl = document.getElementById(`card_${tableId}`);
-        if (cardEl) cardEl.querySelector('.btn-save-changes')?.classList.replace('hidden', 'flex');
+        updateDOM(tableId);
       },
       onRemoveEmptyColumns: (tableId) => {
         removeEmptyColumns(tableId, globalState);
-        renderAll();
-        editStates[tableId] = false;
-        toggleEditMode(tableId, globalState);
-        const cardEl = document.getElementById(`card_${tableId}`);
-        if (cardEl) cardEl.querySelector('.btn-save-changes')?.classList.replace('hidden', 'flex');
+        updateDOM(tableId);
+      },
+      onBulkDelete: (tableId) => {
+        const tableEl = document.getElementById(tableId);
+        if (!tableEl) return;
+        const checked = tableEl.querySelectorAll('.row-checkbox:checked');
+        if (checked.length === 0) {
+           showToast('Pilih baris yang ingin dihapus terlebih dahulu.', 'error');
+           return;
+        }
+        showConfirm(`Apakah Anda yakin ingin menghapus ${checked.length} baris terpilih?`, () => {
+          checked.forEach(cb => {
+            const tr = cb.closest('tr');
+            if (tr) tr.remove();
+          });
+          updateDOM();
+          showToast(`${checked.length} baris berhasil dihapus`);
+        });
       },
       onPrint: (tableId) => {
         saveTableState(tableId, globalState); // Auto-save edits
@@ -324,6 +328,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
+  const updateDOM = (excludeId = null) => {
+    // 1. Sync all active edit modes to globalState so we don't lose typed text
+    Object.keys(editStates).forEach(id => {
+      if (editStates[id] && id !== excludeId) saveTableState(id, globalState);
+    });
+    
+    // 2. Render all tables from globalState
+    renderAll();
+    
+    // 3. Re-apply edit mode visuals for tables that are supposed to be editing
+    Object.keys(editStates).forEach(id => {
+      if (editStates[id]) {
+        editStates[id] = false; // Reset before toggle
+        toggleEditMode(id, globalState); // This sets it back to true and updates UI
+        const cardEl = document.getElementById(`card_${id}`);
+        if (cardEl) cardEl.querySelector('.btn-save-changes')?.classList.replace('hidden', 'flex');
+      }
+    });
+  };
+
   // Load saved data if exists
   loadFromLocalStorage();
   updateGlobalMetaUI();
@@ -348,18 +372,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const today = new Date().toISOString().split('T')[0];
     const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
-    document.getElementById('globalCustomerName').value = meta.customerName || '';
-    document.getElementById('globalCustomerAddress').value = meta.customerAddress || '';
-    document.getElementById('globalDate').value = meta.date || today;
-    document.getElementById('globalDueDate').value = meta.dueDate || nextWeek;
+    const globalMetaElement = document.getElementById('globalCustomerName');
+    if (globalMetaElement) globalMetaElement.value = meta.customerName || '';
+    
+    const globalCustomerAddress = document.getElementById('globalCustomerAddress');
+    if (globalCustomerAddress) globalCustomerAddress.value = meta.customerAddress || '';
+    
+    const globalDate = document.getElementById('globalDate');
+    if (globalDate) globalDate.value = meta.date || today;
     
     // Sync back to state if defaults were used
     if (!meta.date) globalState.globalInvoiceMeta.date = today;
-    if (!meta.dueDate) globalState.globalInvoiceMeta.dueDate = nextWeek;
   }
 
   // Global Meta Listeners
-  const globalMetaInputs = ['globalCustomerName', 'globalCustomerAddress', 'globalDate', 'globalDueDate'];
+  const globalMetaInputs = ['globalCustomerName', 'globalCustomerAddress', 'globalDate'];
   globalMetaInputs.forEach(id => {
     document.getElementById(id)?.addEventListener('input', (e) => {
       const key = id.replace('global', '').charAt(0).toLowerCase() + id.replace('global', '').slice(1);
@@ -425,20 +452,34 @@ document.addEventListener('DOMContentLoaded', () => {
       newTables = newTables.map(table => {
         return {
           ...table,
-          headers: ['Nama Barang', 'JUMLAH', 'HARGA SATUAN', 'SUB TOTAL'],
+          headers: ['Nama Barang', 'JUMLAH', 'SATUAN', 'HARGA SATUAN', 'SUB TOTAL'],
           rows: table.rows.map(row => {
             const newRow = [...row];
             
+            // Cek apakah tabel lama belum punya kolom satuan (hanya 4 kolom yg terisi)
+            // Jika index 2 kosong / dianggap harga, dan panjang asal kurang, kita harus menyisipkan satuan
+            // Tapi karena row dari excel bisa sembarang, mari asumsikan dari parse Excel (yang membaca 4/5 kolom)
+            // Jika row.length = 4 (Nama, Qty, Harga, Subtotal), sisipkan di index 2
+            if (newRow.length >= 4 && !newRow[4] && (parseInt(newRow[2]?.toString().replace(/[^0-9]/g, ''), 10) > 100)) {
+               // kemungkinan besar index 2 itu Harga
+               newRow.splice(2, 0, ''); 
+            } else if (newRow.length < 5) {
+               newRow.splice(2, 0, '');
+            }
+
             // Auto Calculation logic during import
             const cleanNum = (s) => parseInt(s?.toString().replace(/[^0-9]/g, ''), 10) || 0;
             const qty = cleanNum(newRow[1]);
-            const price = cleanNum(newRow[2]);
+            const price = cleanNum(newRow[3]);
             const subtotal = qty * price;
 
-            if (newRow[0] !== undefined && typeof newRow[0] === 'string') newRow[0] = newRow[0].toUpperCase();
+            if (newRow[0] !== undefined && typeof newRow[0] === 'string') {
+              newRow[0] = newRow[0].toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+            }
             newRow[1] = toQty(qty.toString());
-            newRow[2] = toRupiah(price.toString());
-            newRow[3] = toRupiah(subtotal.toString());
+            newRow[2] = newRow[2] || '';
+            newRow[3] = toRupiah(price.toString());
+            newRow[4] = toRupiah(subtotal.toString());
             return newRow;
           })
         };

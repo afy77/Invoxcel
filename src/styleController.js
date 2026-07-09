@@ -135,11 +135,11 @@ export function initStyleController(panelId, globalState, targetTableId = null) 
               </div>
               <div>
                 <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1">Kiri</label>
-                <input type="number" id="style_marginLeft" value="${currentStyles.marginLeft || '12'}" class="w-full h-8 text-xs border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-2 outline-none focus:border-indigo-400" min="0" max="50">
+                <input type="number" id="style_marginLeft" value="${currentStyles.marginLeft || '30'}" class="w-full h-8 text-xs border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-2 outline-none focus:border-indigo-400" min="0" max="50">
               </div>
               <div>
                 <label class="block text-[9px] font-bold text-slate-400 uppercase mb-1">Kanan</label>
-                <input type="number" id="style_marginRight" value="${currentStyles.marginRight || '12'}" class="w-full h-8 text-xs border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-2 outline-none focus:border-indigo-400" min="0" max="50">
+                <input type="number" id="style_marginRight" value="${currentStyles.marginRight || '20'}" class="w-full h-8 text-xs border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg px-2 outline-none focus:border-indigo-400" min="0" max="50">
               </div>
            </div>
         </div>

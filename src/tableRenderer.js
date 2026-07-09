@@ -92,6 +92,20 @@ export function renderTables(tables, containerId, actions) {
     // Thead
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
+    
+    // Kolom Select (kiri)
+    const thSelect = document.createElement('th');
+    thSelect.className = 'w-12 px-3 py-3 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-center select-col hidden opacity-0 transition-all duration-300';
+    const selectAllCb = document.createElement('input');
+    selectAllCb.type = 'checkbox';
+    selectAllCb.className = 'w-4 h-4 cursor-pointer text-indigo-600 bg-white border-gray-300 rounded focus:ring-indigo-500 transition-transform hover:scale-110 shadow-sm';
+    selectAllCb.onclick = (e) => {
+        const checkboxes = tableEl.querySelectorAll('.row-checkbox');
+        checkboxes.forEach(cb => cb.checked = e.target.checked);
+    };
+    thSelect.appendChild(selectAllCb);
+    headerRow.appendChild(thSelect);
+
     table.headers.forEach((headerText, colIndex) => {
       const th = document.createElement('th');
       th.className = 'px-4 py-3.5 border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-300 relative group uppercase text-xs tracking-wider';
@@ -113,7 +127,7 @@ export function renderTables(tables, containerId, actions) {
     
     // Kolom aksi (hidden by default, shown in edit mode)
     const thAction = document.createElement('th');
-    thAction.className = 'px-4 py-3 border border-gray-300 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 font-semibold text-gray-700 dark:text-slate-300 action-col hidden';
+    thAction.className = 'px-4 py-3 border border-gray-300 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 font-semibold text-gray-700 dark:text-slate-300 action-col hidden opacity-0 transition-all duration-300 text-center';
     thAction.textContent = 'Aksi';
     headerRow.appendChild(thAction);
 
@@ -169,6 +183,16 @@ export function renderTables(tables, containerId, actions) {
         }
       });
       
+      // Kolom Select Data Row
+      const tdSelect = document.createElement('td');
+      tdSelect.className = 'w-12 px-3 py-2 border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 text-center select-col hidden opacity-0 transition-all duration-300';
+      const rowCb = document.createElement('input');
+      rowCb.type = 'checkbox';
+      rowCb.className = 'w-4 h-4 cursor-pointer text-indigo-600 bg-white border-gray-300 rounded focus:ring-indigo-500 transition-transform hover:scale-110 shadow-sm row-checkbox';
+      rowCb.dataset.rowIndex = rowIndex;
+      tdSelect.appendChild(rowCb);
+      tr.appendChild(tdSelect);
+
       // Pastikan jumlah sel sama dengan header
       for (let i = 0; i < table.headers.length; i++) {
         const td = document.createElement('td');
@@ -179,7 +203,7 @@ export function renderTables(tables, containerId, actions) {
 
       // Kolom aksi (hidden by default)
       const tdAction = document.createElement('td');
-      tdAction.className = 'px-4 py-2 border border-gray-300 dark:border-slate-700 action-col hidden';
+      tdAction.className = 'px-4 py-2 border border-gray-300 dark:border-slate-700 action-col hidden opacity-0 transition-all duration-300';
       
       const actionWrapper = document.createElement('div');
       actionWrapper.className = 'flex items-center justify-center gap-3';
@@ -254,7 +278,15 @@ export function renderTables(tables, containerId, actions) {
     `;
     btnRemoveEmptyCols.onclick = () => actions.onRemoveEmptyColumns(table.tableId);
 
-    addRowContainer.append(btnAddRowTop, btnAddRowBottom, btnAddColumn, btnRemoveEmptyCols);
+    const btnBulkDelete = document.createElement('button');
+    btnBulkDelete.className = 'px-4 py-2 text-sm font-medium text-rose-600 bg-rose-50 rounded-lg hover:bg-rose-100 transition-colors flex items-center gap-2 hidden btn-bulk-delete';
+    btnBulkDelete.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+      Hapus Terpilih
+    `;
+    btnBulkDelete.onclick = () => actions.onBulkDelete(table.tableId);
+
+    addRowContainer.append(btnAddRowTop, btnAddRowBottom, btnAddColumn, btnRemoveEmptyCols, btnBulkDelete);
     cardBody.appendChild(addRowContainer);
 
     card.append(cardHeader, cardBody);

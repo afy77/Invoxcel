@@ -25,7 +25,7 @@ export async function parseExcelFile(file) {
           if (jsonData.length === 0) return;
 
           let currentTableName = '';
-          let currentHeaders = ['Nama Barang', 'JUMLAH', 'HARGA SATUAN', 'SUB TOTAL'];
+          let currentHeaders = ['Nama Barang', 'JUMLAH', 'SATUAN', 'HARGA SATUAN', 'SUB TOTAL'];
           let currentTableRows = [];
 
           for (let i = 0; i < jsonData.length; i++) {

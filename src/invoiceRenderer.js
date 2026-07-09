@@ -23,25 +23,30 @@ export function renderInvoice(tableData, containerId) {
 
   const sheetNameLower = (tableData.sheetName || '').toLowerCase();
   
-  if (sheetNameLower.includes('sayur') || sheetNameLower.includes('buah')) {
+  const isSayur = sheetNameLower.includes('sayur') || sheetNameLower.includes('buah') || tableData.tableId === 'table_1';
+  const isProtein = sheetNameLower.includes('protein') || tableData.tableId === 'table_2';
+  const isKarbo = sheetNameLower.includes('karbo') || tableData.tableId === 'table_3';
+  const isBumbu = sheetNameLower.includes('bumbu') || sheetNameLower.includes('keringan') || tableData.tableId === 'table_4' || tableData.tableId === 'table_5';
+
+  if (isSayur) {
     defaultLogoSrc = '/METAAGRA.jpeg';
     defCompanyName = 'CV META AGRA';
     defCompanyAddress = '0269-JL PERINTIS KEMERDEKAAN';
     defAccountInfo = '1420195889 / META AGRA CV (IDR)';
     defSignatureName = 'DEDEN NURMANSYAH ZEIN';
-  } else if (sheetNameLower.includes('protein')) {
+  } else if (isProtein) {
     defaultLogoSrc = '/KALINGGA.jpeg';
     defCompanyName = 'CV KALINGGA MURDA';
     defCompanyAddress = '0269-JL PERINTIS KEMERDEKAAN';
     defAccountInfo = '1420129076 / KALINGGA MURDA CV (IDR)';
     defSignatureName = 'HUSNI TSANI FAIZAL';
-  } else if (sheetNameLower.includes('karbo')) {
+  } else if (isKarbo) {
     defaultLogoSrc = '/SEMESTA.jpeg';
     defCompanyName = 'CV SEMESTA DIRAYA';
     defCompanyAddress = '0269-JL PERINTIS KEMERDEKAAN';
     defAccountInfo = '1420163288 / SEMESTA DIRAYA (IDR)';
     defSignatureName = 'YUSUP KURNIAWAN';
-  } else if (sheetNameLower.includes('bumbu') || sheetNameLower.includes('keringan')) {
+  } else if (isBumbu) {
     defaultLogoSrc = '/BEGJA.jpeg';
     defCompanyName = 'CV BEGJA KEMAYANGAN';
     defCompanyAddress = '0269-JL PERINTIS KEMERDEKAAN';
@@ -51,9 +56,6 @@ export function renderInvoice(tableData, containerId) {
 
   // Logo Size Defaults
   let defLogoWidth = '400';
-  const isProtein = sheetNameLower.includes('protein');
-  const isKarbo = sheetNameLower.includes('karbo');
-  const isBumbu = sheetNameLower.includes('bumbu') || sheetNameLower.includes('keringan');
 
   if (tableData.tableId === 'table_4' || isKarbo || isProtein) {
     defLogoWidth = '600';
@@ -107,9 +109,10 @@ export function renderInvoice(tableData, containerId) {
     containerPadding = 'p-1';
   }
 
-  // Hitung otomatis subtotal dari kolom "Jumlah" (index 3)
+  // Hitung otomatis subtotal dari kolom "SUB TOTAL"
   const calculatedSubtotal = tableData.rows.reduce((sum, row) => {
-    const val = row[3];
+    const subtotalIdx = tableData.headers.findIndex(h => h.toUpperCase().includes('SUB TOTAL') || h.toUpperCase().includes('TOTAL'));
+    const val = subtotalIdx !== -1 ? row[subtotalIdx] : row[4];
     if (val === undefined || val === null || val === '') return sum;
     const cleaned = val.toString().replace(/[^0-9]/g, '');
     const number = parseInt(cleaned, 10);
@@ -155,8 +158,8 @@ export function renderInvoice(tableData, containerId) {
   // Logika Margin Dinamis
   const marginTop = s.marginTop || '12';
   const marginBottom = s.marginBottom || '12';
-  const marginLeft = s.marginLeft || '12';
-  const marginRight = s.marginRight || '12';
+  const marginLeft = s.marginLeft || '30';
+  const marginRight = s.marginRight || '20';
 
   // Suntikkan style @page dinamis untuk print (margin 0 untuk hapus header/footer bawaan browser)
   let styleTag = document.getElementById('dynamic-print-styles');
@@ -219,10 +222,7 @@ export function renderInvoice(tableData, containerId) {
               <span class="text-black font-bold w-32 shrink-0">Tanggal:</span>
               <div class="flex-1 h-6 flex items-center"><input type="date" onclick="this.showPicker()" class="invoice-field inv_date border-none outline-none bg-transparent text-gray-900 font-bold w-full px-1 py-0 text-sm cursor-pointer hover:bg-gray-50 rounded transition-colors" value="${meta.date || today}"></div>
             </div>
-            <div class="flex flex-row items-center h-6">
-              <span class="text-black font-bold w-32 shrink-0">Jatuh Tempo:</span>
-              <div class="flex-1 h-6 flex items-center"><input type="date" onclick="this.showPicker()" class="invoice-field inv_dueDate border-none outline-none bg-transparent text-gray-900 font-bold w-full px-1 py-0 text-sm cursor-pointer hover:bg-gray-50 rounded transition-colors" value="${meta.dueDate || nextWeek}"></div>
-            </div>
+
           </div>
         </div>
       </div>
@@ -238,15 +238,17 @@ export function renderInvoice(tableData, containerId) {
                 const title = typeof h === 'string' ? h.toUpperCase() : '';
                 
                 if (title.includes('NAMA') || idx === 0) {
-                  widthStyle = 'width: 32%;';
-                } else if (title.includes('JUMLAH') || idx === 1) {
-                  widthStyle = 'width: 9%;';
-                } else if (title.includes('HARGA') || idx === 2) {
+                  widthStyle = 'width: 28%;';
+                } else if (title === 'JUMLAH' || idx === 1) {
+                  widthStyle = 'width: 7%;';
+                } else if (title === 'SATUAN' || idx === 2) {
+                  widthStyle = 'width: 7%;';
+                } else if (title.includes('HARGA') || idx === 3) {
                   widthStyle = 'width: 15%;';
-                } else if (title.includes('SUB') || title.includes('TOTAL') || idx === 3) {
+                } else if (title.includes('SUB') || title.includes('TOTAL') || idx === 4) {
                   widthStyle = 'width: 19%;';
                 } else if (title.includes('PPN')) {
-                  widthStyle = 'width: 25%;';
+                  widthStyle = 'width: 24%;';
                 }
                 
                 // Memaksa HARGA SATUAN menjadi 2 baris
@@ -282,7 +284,7 @@ export function renderInvoice(tableData, containerId) {
 
                     const upperH = typeof _h === 'string' ? _h.toUpperCase() : '';
                     if (upperH === 'NAMA BARANG' && displayVal !== '') {
-                      displayVal = displayVal.toString().toUpperCase();
+                      displayVal = displayVal.toString();
                     }
 
                     // Quantity/JUMLAH: thousands separator for index 1
@@ -295,7 +297,7 @@ export function renderInvoice(tableData, containerId) {
                     }
 
                     // Format Rupiah for columns (Harga, Subtotal, PPN)
-                    const isCurrencyCol = idx >= 2 || upperH.includes('PPN');
+                    const isCurrencyCol = idx >= 3 || upperH.includes('PPN');
                     if (isCurrencyCol && displayVal !== '' && !displayVal.toString().includes('Rp')) {
                       const cleaned = displayVal.toString().replace(/[^0-9]/g, '');
                       const number = parseInt(cleaned, 10);

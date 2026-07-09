@@ -14,8 +14,8 @@ export function toggleEditMode(tableId, globalState) {
   const isEditing = editStates[tableId] || false;
   editStates[tableId] = !isEditing;
 
-  const tdCells = tableEl.querySelectorAll('td:not(.action-col)');
-  const thContents = tableEl.querySelectorAll('th:not(.action-col) .header-content');
+  const tdCells = tableEl.querySelectorAll('td:not(.action-col):not(.select-col)');
+  const thContents = tableEl.querySelectorAll('th:not(.action-col):not(.select-col) .header-content');
   const actionCols = tableEl.querySelectorAll('.action-col');
   const colActionBtns = tableEl.querySelectorAll('.col-action-btn');
   const addRowContainer = cardEl.querySelector('.add-row-container');
@@ -26,19 +26,27 @@ export function toggleEditMode(tableId, globalState) {
   if (!isEditing) {
     tdCells.forEach(cell => {
       cell.setAttribute('contenteditable', 'true');
-      cell.classList.add('bg-yellow-50', 'outline-blue-400');
+      cell.classList.add('bg-white', 'dark:bg-slate-800', 'outline-blue-400');
     });
     thContents.forEach(cell => {
       cell.setAttribute('contenteditable', 'true');
-      cell.classList.add('bg-yellow-50', 'outline-blue-400', 'px-1', 'rounded');
+      cell.classList.add('bg-white', 'dark:bg-slate-800', 'outline-blue-400', 'px-1', 'rounded');
     });
     
-    // Tampilkan kolom aksi & tombol hapus saat mode edit
     const actionCols = tableEl.querySelectorAll('.action-col');
+    const selectCols = tableEl.querySelectorAll('.select-col');
     const rowDeleteBtns = tableEl.querySelectorAll('.row-delete-btn');
     const columnDeleteBtns = tableEl.querySelectorAll('.col-action-btn');
+    const bulkDeleteBtn = cardEl.querySelector('.btn-bulk-delete');
     
-    actionCols.forEach(col => col.classList.remove('hidden'));
+    actionCols.forEach(col => {
+      col.classList.remove('hidden');
+      setTimeout(() => col.classList.remove('opacity-0'), 10);
+    });
+    selectCols.forEach(col => {
+      col.classList.remove('hidden');
+      setTimeout(() => col.classList.remove('opacity-0'), 10);
+    });
     rowDeleteBtns.forEach(btn => {
       btn.classList.remove('hidden');
       btn.classList.add('flex');
@@ -47,6 +55,10 @@ export function toggleEditMode(tableId, globalState) {
       btn.classList.remove('hidden');
       btn.classList.add('flex');
     });
+    if (bulkDeleteBtn) {
+      bulkDeleteBtn.classList.remove('hidden');
+      bulkDeleteBtn.classList.add('flex');
+    }
 
     if (addRowContainer) addRowContainer.classList.remove('hidden');
     if (editText) {
@@ -60,19 +72,27 @@ export function toggleEditMode(tableId, globalState) {
     // Simpan perubahan dan nonaktifkan mode edit
     tdCells.forEach(cell => {
       cell.removeAttribute('contenteditable');
-      cell.classList.remove('bg-yellow-50', 'outline-blue-400');
+      cell.classList.remove('bg-white', 'dark:bg-slate-800', 'outline-blue-400');
     });
     thContents.forEach(cell => {
       cell.removeAttribute('contenteditable');
-      cell.classList.remove('bg-yellow-50', 'outline-blue-400', 'px-1', 'rounded');
+      cell.classList.remove('bg-white', 'dark:bg-slate-800', 'outline-blue-400', 'px-1', 'rounded');
     });
     
-    // Sembunyikan kembali kolom aksi & tombol hapus setelah simpan
     const actionCols = tableEl.querySelectorAll('.action-col');
+    const selectCols = tableEl.querySelectorAll('.select-col');
     const rowDeleteBtns = tableEl.querySelectorAll('.row-delete-btn');
     const columnDeleteBtns = tableEl.querySelectorAll('.col-action-btn');
+    const bulkDeleteBtn = cardEl.querySelector('.btn-bulk-delete');
     
-    actionCols.forEach(col => col.classList.add('hidden'));
+    actionCols.forEach(col => {
+      col.classList.add('opacity-0');
+      col.classList.add('hidden');
+    });
+    selectCols.forEach(col => {
+      col.classList.add('opacity-0');
+      col.classList.add('hidden');
+    });
     rowDeleteBtns.forEach(btn => {
       btn.classList.add('hidden');
       btn.classList.remove('flex');
@@ -81,6 +101,10 @@ export function toggleEditMode(tableId, globalState) {
       btn.classList.add('hidden');
       btn.classList.remove('flex');
     });
+    if (bulkDeleteBtn) {
+      bulkDeleteBtn.classList.add('hidden');
+      bulkDeleteBtn.classList.remove('flex');
+    }
 
     if (addRowContainer) addRowContainer.classList.add('hidden');
     if (editText) {
@@ -109,16 +133,25 @@ export function addRow(tableId, globalState, position = 'bottom', relativeRowInd
   if (!tableEl) return;
 
   const tbody = tableEl.querySelector('tbody');
-  const headerCount = tableEl.querySelectorAll('thead th:not(.action-col)').length;
+  const headerCount = tableEl.querySelectorAll('thead th:not(.action-col):not(.select-col)').length;
   
   const tr = document.createElement('tr');
   // Temporary row index, will be sanitized during saveTableState
   const newRowIndex = Date.now(); 
   tr.dataset.rowIndex = newRowIndex;
 
+  const tdSelect = document.createElement('td');
+  tdSelect.className = 'w-12 px-3 py-2 border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/40 text-center select-col transition-all duration-300';
+  const rowCb = document.createElement('input');
+  rowCb.type = 'checkbox';
+  rowCb.className = 'w-4 h-4 cursor-pointer text-indigo-600 bg-white border-gray-300 rounded focus:ring-indigo-500 transition-transform hover:scale-110 shadow-sm row-checkbox';
+  rowCb.dataset.rowIndex = newRowIndex;
+  tdSelect.appendChild(rowCb);
+  tr.appendChild(tdSelect);
+
   for (let i = 0; i < headerCount; i++) {
     const td = document.createElement('td');
-    td.className = 'px-4 py-2 border border-gray-300 text-gray-600 bg-yellow-50 outline-blue-400';
+    td.className = 'px-4 py-2 border border-gray-300 text-gray-600 bg-white outline-blue-400';
     td.setAttribute('contenteditable', 'true');
     tr.appendChild(td);
   }
@@ -253,7 +286,7 @@ export function saveTableState(tableId, globalState) {
   };
 
   // Extract dynamic headers from UI
-  const headerContents = tableEl.querySelectorAll('thead th:not(.action-col) .header-content');
+  const headerContents = tableEl.querySelectorAll('thead th:not(.action-col):not(.select-col) .header-content');
   const headers = Array.from(headerContents).map(div => div.textContent.trim());
   tableData.headers = headers;
 
@@ -266,7 +299,7 @@ export function saveTableState(tableId, globalState) {
   const rows = tableEl.querySelectorAll('tbody tr');
   tableData.rows = Array.from(rows).map((tr, idx) => {
     tr.dataset.rowIndex = idx; 
-    const cells = tr.querySelectorAll('td:not(.action-col)');
+    const cells = tr.querySelectorAll('td:not(.action-col):not(.select-col)');
     
     // 1. Ambil data asli dari DOM
     let rawData = Array.from(cells).map(td => td.textContent.trim());
@@ -287,9 +320,7 @@ export function saveTableState(tableId, globalState) {
       let formattedVal = val;
       const td = cells[colIdx];
 
-      if (colIdx === 0 && val && !val.includes(' ')) { // Asumsi kolom 0 adalah Nama/Kategori
-        formattedVal = val.toUpperCase();
-      } else if (colIdx === qtyIdx) {
+      if (colIdx === qtyIdx) {
         formattedVal = toQty(qty.toString());
       } else if (colIdx === priceIdx) {
         formattedVal = toRupiah(price.toString());
