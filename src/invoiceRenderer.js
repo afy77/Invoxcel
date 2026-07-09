@@ -57,7 +57,7 @@ export function renderInvoice(tableData, containerId) {
   // Logo Size Defaults
   let defLogoWidth = '400';
 
-  if (tableData.tableId === 'table_4' || isKarbo || isProtein) {
+  if (tableData.tableId === 'table_4' || isKarbo) {
     defLogoWidth = '600';
   } else if (tableData.tableId === 'table_5' || isBumbu) {
     defLogoWidth = '450';
@@ -311,10 +311,11 @@ export function renderInvoice(tableData, containerId) {
                     }
                     // Gunakan &nbsp; jika kosong agar border tetap tampil sempurna di semua browser
                      let align = (columnAligns[idx] && columnAligns[idx].body) || bodyAlign;
+                     let extraStyle = '';
                      if (upperH === 'NAMA BARANG') {
                        align = 'left';
                      }
-                    return `<td style="border-color: ${borderColor}; padding: ${padding}; border-width: 1px; border-style: solid; text-align: ${align};">${displayVal || '&nbsp;'}</td>`;
+                    return `<td style="border-color: ${borderColor}; padding: ${padding}; border-width: 1px; border-style: solid; text-align: ${align}; ${extraStyle}">${displayVal || '&nbsp;'}</td>`;
                   }).join('')}
                 </tr>
               `;
