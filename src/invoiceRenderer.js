@@ -218,9 +218,9 @@ export function renderInvoice(tableData, containerId) {
         <div class="w-[40%]">
           <h3 class="text-sm font-bold text-transparent mb-1 select-none">&nbsp;</h3>
           <div class="flex flex-col gap-y-1 text-sm">
-            <div class="flex flex-row items-center h-6">
-              <span class="text-black font-bold w-32 shrink-0">Tanggal:</span>
-              <div class="flex-1 h-6 flex items-center"><input type="date" onclick="this.showPicker()" class="invoice-field inv_date border-none outline-none bg-transparent text-gray-900 font-bold w-full px-1 py-0 text-sm cursor-pointer hover:bg-gray-50 rounded transition-colors" value="${meta.date || today}"></div>
+            <div class="flex flex-row items-center justify-end h-6">
+              <span class="text-black font-bold mr-1 shrink-0">Tanggal:</span>
+              <div class="h-6 flex items-center"><input type="date" onclick="this.showPicker()" class="invoice-field inv_date border-none outline-none bg-transparent text-gray-900 font-bold w-auto px-0 py-0 text-sm cursor-pointer hover:bg-gray-50 rounded transition-colors text-right" value="${meta.date || today}"></div>
             </div>
 
           </div>
