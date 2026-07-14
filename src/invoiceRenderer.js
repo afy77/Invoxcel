@@ -246,9 +246,9 @@ export function renderInvoice(tableData, containerId) {
                 } else if (title.includes('HARGA') || idx === 3) {
                   widthStyle = 'width: 15%;';
                 } else if (title.includes('SUB') || title.includes('TOTAL') || idx === 4) {
-                  widthStyle = 'width: 19%;';
+                  widthStyle = 'width: 25%;';
                 } else if (title.includes('PPN')) {
-                  widthStyle = 'width: 24%;';
+                  widthStyle = 'width: 18%;';
                 }
                 
                 // Memaksa HARGA SATUAN menjadi 2 baris
