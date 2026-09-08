@@ -244,11 +244,11 @@ export function renderInvoice(tableData, containerId) {
                 } else if (title === 'SATUAN' || idx === 2) {
                   widthStyle = 'width: 7%;';
                 } else if (title.includes('HARGA') || idx === 3) {
-                  widthStyle = 'width: 15%;';
+                  widthStyle = 'width: 22%;';
                 } else if (title.includes('SUB') || title.includes('TOTAL') || idx === 4) {
                   widthStyle = 'width: 25%;';
                 } else if (title.includes('PPN')) {
-                  widthStyle = 'width: 18%;';
+                  widthStyle = 'width: 11%;';
                 }
                 
                 // Memaksa HARGA SATUAN menjadi 2 baris
@@ -314,6 +314,9 @@ export function renderInvoice(tableData, containerId) {
                      let extraStyle = '';
                      if (upperH === 'NAMA BARANG') {
                        align = 'left';
+                     }
+                     if (isCurrencyCol) {
+                       extraStyle += ' white-space: nowrap;';
                      }
                     return `<td style="border-color: ${borderColor}; padding: ${padding}; border-width: 1px; border-style: solid; text-align: ${align}; ${extraStyle}">${displayVal || '&nbsp;'}</td>`;
                   }).join('')}
