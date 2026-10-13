@@ -102,9 +102,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const imageControls = document.getElementById('imageControls');
         if (imageControls) imageControls.classList.add('hidden');
 
+        // Ambil nomor invoice aktif dari input field jika ada
+        const invNumInput = element.querySelector('.inv_invoiceNumber');
+        const activeInvoiceNum = (invNumInput ? invNumInput.value.trim() : '') || generateInvoiceNumber(tableData);
+        const safeInvoiceFilename = activeInvoiceNum.replace(/[/\\?%*:|"<>]/g, '_');
+
         const opt = {
           margin:       [12, 12, 12, 12],
-          filename:     `Invoice_${generateInvoiceNumber()}.pdf`,
+          filename:     `Invoice_${safeInvoiceFilename}.pdf`,
           image:        { type: 'jpeg', quality: 0.98 },
           html2canvas:  { 
             scale: 2, // Kurangi dari 3 menjadi 2 agar tidak boros Memori/lag
@@ -150,12 +155,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Helper untuk generate nomor invoice default
-export function generateInvoiceNumber() {
+export function generateInvoiceNumber(tableData) {
   const date = new Date();
   const yyyy = date.getFullYear();
   const mm = String(date.getMonth() + 1).padStart(2, '0');
   const dd = String(date.getDate()).padStart(2, '0');
-  // Random 3 digit number for demo purposes
+  let suffix = '';
+  if (tableData && tableData.tableId) {
+    const num = tableData.tableId.replace(/[^0-9]/g, '');
+    suffix = num ? `-${num.padStart(2, '0')}` : '';
+  }
   const random = Math.floor(Math.random() * 900) + 100;
-  return `INV-${yyyy}${mm}${dd}-${random}`;
+  return `INV-${yyyy}${mm}${dd}${suffix || `-${random}`}`;
 }

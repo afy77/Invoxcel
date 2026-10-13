@@ -23,6 +23,7 @@ initDarkMode();
 const globalState = {
   tables: [], // Menyimpan data tabel yang sedang aktif
   globalInvoiceMeta: {
+    invoiceNumber: '',
     customerName: '',
     customerAddress: '',
     date: '',
@@ -257,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const localMeta = tableData.invoiceMeta || {};
             const mergedMeta = {
               ...localMeta,
+              invoiceNumber: localMeta.invoiceNumber || globalState.globalInvoiceMeta.invoiceNumber,
               customerName: localMeta.customerName || globalState.globalInvoiceMeta.customerName,
               customerAddress: localMeta.customerAddress || globalState.globalInvoiceMeta.customerAddress,
               date: localMeta.date || globalState.globalInvoiceMeta.date,
@@ -294,6 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const localMeta = tableData.invoiceMeta || {};
             const mergedMeta = {
               ...localMeta,
+              invoiceNumber: localMeta.invoiceNumber || globalState.globalInvoiceMeta.invoiceNumber,
               customerName: localMeta.customerName || globalState.globalInvoiceMeta.customerName,
               customerAddress: localMeta.customerAddress || globalState.globalInvoiceMeta.customerAddress,
               date: localMeta.date || globalState.globalInvoiceMeta.date,
@@ -372,6 +375,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const today = new Date().toISOString().split('T')[0];
     const nextWeek = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
+    const globalInvoiceNumber = document.getElementById('globalInvoiceNumber');
+    if (globalInvoiceNumber) globalInvoiceNumber.value = meta.invoiceNumber || '';
+
     const globalMetaElement = document.getElementById('globalCustomerName');
     if (globalMetaElement) globalMetaElement.value = meta.customerName || '';
     
@@ -386,7 +392,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Global Meta Listeners
-  const globalMetaInputs = ['globalCustomerName', 'globalCustomerAddress', 'globalDate'];
+  const globalMetaInputs = ['globalInvoiceNumber', 'globalCustomerName', 'globalCustomerAddress', 'globalDate'];
   globalMetaInputs.forEach(id => {
     document.getElementById(id)?.addEventListener('input', (e) => {
       const key = id.replace('global', '').charAt(0).toLowerCase() + id.replace('global', '').slice(1);
@@ -403,6 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const localMeta = table.invoiceMeta || {};
       const mergedMeta = {
         ...localMeta,
+        invoiceNumber: localMeta.invoiceNumber || globalState.globalInvoiceMeta.invoiceNumber,
         customerName: localMeta.customerName || globalState.globalInvoiceMeta.customerName,
         customerAddress: localMeta.customerAddress || globalState.globalInvoiceMeta.customerAddress,
         date: localMeta.date || globalState.globalInvoiceMeta.date,

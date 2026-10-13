@@ -30,13 +30,14 @@ export function exportToPdf(tableId, sheetName, meta = {}) {
   
   wrapper.appendChild(title);
 
-  if (meta.customerName) {
+  if (meta.customerName || meta.invoiceNumber) {
     const metaDiv = document.createElement('div');
     metaDiv.style.fontFamily = 'sans-serif';
     metaDiv.style.marginBottom = '15px';
     metaDiv.style.fontSize = '12px';
     metaDiv.innerHTML = `
-      <strong>Pelanggan:</strong> ${meta.customerName}<br>
+      ${meta.invoiceNumber ? `<strong>No. Invoice:</strong> ${meta.invoiceNumber}<br>` : ''}
+      ${meta.customerName ? `<strong>Pelanggan:</strong> ${meta.customerName}<br>` : ''}
       ${meta.customerAddress ? `<strong>Alamat:</strong> ${meta.customerAddress}<br>` : ''}
       ${meta.date ? `<strong>Tanggal:</strong> ${meta.date}` : ''}
     `;
