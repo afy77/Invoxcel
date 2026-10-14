@@ -170,22 +170,6 @@ export function renderInvoice(tableData, containerId) {
   }
   styleTag.innerHTML = `@page { margin: 0 !important; }`;
 
-  // Helper Nomor Invoice Otomatis
-  const getAutoInvoiceNumber = () => {
-    if (meta.invoiceNumber) return meta.invoiceNumber;
-    const dateObj = meta.date ? new Date(meta.date) : new Date();
-    const yyyy = isNaN(dateObj.getFullYear()) ? new Date().getFullYear() : dateObj.getFullYear();
-    const mm = String(isNaN(dateObj.getMonth()) ? (new Date().getMonth() + 1) : (dateObj.getMonth() + 1)).padStart(2, '0');
-    const dd = String(isNaN(dateObj.getDate()) ? new Date().getDate() : dateObj.getDate()).padStart(2, '0');
-    let suffix = '';
-    if (tableData && tableData.tableId) {
-      const num = tableData.tableId.replace(/[^0-9]/g, '');
-      suffix = num ? `-${num.padStart(2, '0')}` : '';
-    }
-    return `INV-${yyyy}${mm}${dd}${suffix || '-01'}`;
-  };
-  const invoiceNumberVal = meta.invoiceNumber || getAutoInvoiceNumber();
-
   container.innerHTML = `
     <div class="max-w-4xl print:max-w-none w-full mx-auto ${containerPadding} bg-white invoice-template-${templateName}" style="font-family: ${fontFamily}; color: ${cellFontColor}; padding-top: ${marginTop}mm; padding-bottom: ${marginBottom}mm; padding-left: ${marginLeft}mm; padding-right: ${marginRight}mm;">
       <!-- HEADER AREA (Logo) -->
@@ -231,16 +215,14 @@ export function renderInvoice(tableData, containerId) {
             <textarea class="invoice-field inv_customerAddress text-sm font-bold text-gray-900 border-none outline-none w-full bg-transparent resize-none overflow-hidden placeholder-gray-400 leading-tight py-0.5" rows="1" placeholder="Alamat & Kontak">${meta.customerAddress || ''}</textarea>
           </div>
         </div> 
-        <div class="w-[45%]">
+        <div class="w-[40%]">
           <h3 class="text-sm font-bold text-transparent mb-1 select-none">&nbsp;</h3>
-          <!-- Grid 3 kolom: label | titik dua | nilai (semua sejajar vertikal) -->
-          <div class="grid grid-cols-[auto_auto_11rem] justify-end items-center gap-x-2 gap-y-1 text-sm">
-            <span class="text-black font-bold h-6 flex items-center">No. Invoice</span>
-            <span class="text-black font-bold h-6 flex items-center">:</span>
-            <input type="text" class="invoice-field inv_invoiceNumber h-6 border-none outline-none bg-transparent text-gray-900 font-bold w-full px-0 py-0 text-sm hover:bg-gray-50 rounded transition-colors text-left" placeholder="No. Invoice" value="${invoiceNumberVal}">
-            <span class="text-black font-bold h-6 flex items-center">Tanggal</span>
-            <span class="text-black font-bold h-6 flex items-center">:</span>
-            <input type="date" onclick="this.showPicker()" class="invoice-field inv_date h-6 border-none outline-none bg-transparent text-gray-900 font-bold w-full px-0 py-0 text-sm cursor-pointer hover:bg-gray-50 rounded transition-colors text-left [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-datetime-edit]:p-0 [&::-webkit-datetime-edit-fields-wrapper]:p-0" value="${meta.date || today}">
+          <div class="flex flex-col gap-y-1 text-sm">
+            <div class="flex flex-row items-center justify-end h-6">
+              <span class="text-black font-bold mr-1 shrink-0">Tanggal:</span>
+              <div class="h-6 flex items-center"><input type="date" onclick="this.showPicker()" class="invoice-field inv_date border-none outline-none bg-transparent text-gray-900 font-bold w-auto px-0 py-0 text-sm cursor-pointer hover:bg-gray-50 rounded transition-colors text-right" value="${meta.date || today}"></div>
+            </div>
+
           </div>
         </div>
       </div>

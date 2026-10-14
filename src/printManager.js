@@ -19,10 +19,9 @@ export function printTable(tableId, meta = {}) {
   const tableHtml = cardEl.querySelector('.overflow-x-auto').innerHTML;
   const titleHtml = cardEl.querySelector('h3').outerHTML;
 
-  const customerHtml = (meta.customerName || meta.invoiceNumber) ? `
+  const customerHtml = meta.customerName ? `
     <div style="margin-bottom: 20px; font-size: 14px;">
-      ${meta.invoiceNumber ? `<strong>No. Invoice:</strong> ${meta.invoiceNumber}<br>` : ''}
-      ${meta.customerName ? `<strong>Pelanggan:</strong> ${meta.customerName}<br>` : ''}
+      <strong>Pelanggan:</strong> ${meta.customerName}<br>
       ${meta.customerAddress ? `<strong>Alamat:</strong> ${meta.customerAddress}<br>` : ''}
       ${meta.date ? `<strong>Tanggal:</strong> ${meta.date}` : ''}
     </div>
